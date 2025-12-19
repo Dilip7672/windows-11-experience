@@ -48,7 +48,7 @@ export function WeatherWidget() {
         condition: randomCondition,
         humidity: 30 + Math.floor(Math.random() * 50),
         wind: 5 + Math.floor(Math.random() * 20),
-        location: 'San Francisco',
+        location: 'Dang',
         high: baseTemp + 8,
         low: baseTemp - 4,
       });
