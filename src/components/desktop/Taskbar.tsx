@@ -111,7 +111,7 @@ export function Taskbar({
       </svg>,
     name: 'Settings'
   }];
-  return <div className="fixed bottom-0 left-0 right-0 h-12 glass-strong flex items-center justify-center px-2 z-[1000]">
+  return <div className="fixed bottom-0 left-0 right-0 h-12 glass-strong flex items-center justify-center px-2 z-[1000]" onClick={(e) => e.stopPropagation()}>
       {/* Center Section - Main Icons */}
       <div className="flex items-center gap-0.5">
         {/* Start Button */}
