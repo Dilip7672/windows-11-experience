@@ -7,9 +7,13 @@ import { ControlPanel } from './apps/ControlPanel';
 import { BrowserApp } from './apps/BrowserApp';
 interface TaskbarProps {
   onSearchClick: () => void;
+  isSearchOpen: boolean;
+  setSearchOpen: (open: boolean) => void;
 }
 export function Taskbar({
-  onSearchClick
+  onSearchClick,
+  isSearchOpen,
+  setSearchOpen
 }: TaskbarProps) {
   const {
     windows,
@@ -118,6 +122,7 @@ export function Taskbar({
         <button className={cn("taskbar-icon group relative", isStartMenuOpen && "bg-[hsl(var(--active-bg))]")} onClick={() => {
         setIsStartMenuOpen(!isStartMenuOpen);
         setIsControlPanelOpen(false);
+        setSearchOpen(false);
       }}>
           <svg className="w-5 h-5 transition-transform group-hover:scale-110" viewBox="0 0 24 24" fill="currentColor">
             <path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z" />
