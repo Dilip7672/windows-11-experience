@@ -172,8 +172,8 @@ export function Taskbar({
         setIsControlPanelOpen(!isControlPanelOpen);
         setIsStartMenuOpen(false);
       }}>
-          <span className="text-xs">{formatTime(currentTime)}</span>
-          <span className="text-muted-foreground text-sm">{formatDate(currentTime)}</span>
+          <span className="text-sm">{formatTime(currentTime)}</span>
+          <span className="text-muted-foreground text-xs">{formatDate(currentTime)}</span>
         </button>
       </div>
     </div>;
