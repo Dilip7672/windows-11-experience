@@ -182,7 +182,7 @@ export function Desktop() {
       <SearchPopup isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
       {/* Taskbar */}
-      <Taskbar onSearchClick={() => setIsSearchOpen(true)} />
+      <Taskbar onSearchClick={() => setIsSearchOpen(true)} isSearchOpen={isSearchOpen} setSearchOpen={setIsSearchOpen} />
     </div>
   );
 }
