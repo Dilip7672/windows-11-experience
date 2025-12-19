@@ -59,10 +59,7 @@ export function PDFViewer({ fileName = "portfolio.pdf" }: PDFViewerProps) {
               Professional Summary
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              Passionate Full Stack Developer with 5+ years of experience building scalable web applications. 
-              Proficient in React, Node.js, TypeScript, and cloud technologies. Strong problem-solving skills 
-              with a focus on creating user-friendly, performant solutions. Open source contributor and 
-              continuous learner committed to staying current with emerging technologies.Passionate Geospatial
+              Passionate Geospatial
               Data Science learner with a strong foundation in spatial analysis, data visualization, and 
               Python-based data processing. Experienced in working with GIS tools, remote sensing data,
               and geospatial libraries such as GeoPandas and QGIS. Driven by curiosity and problem-solving,
