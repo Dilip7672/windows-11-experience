@@ -20,13 +20,13 @@ const weatherConditions = [
 
 export function WeatherWidget() {
   const [weather, setWeather] = useState<WeatherData>({
-    temp: NA,
-    condition: 'NA',
-    humidity: NA,
-    wind: NA,
+    temp: 23,
+    condition: 'sunny',
+    humidity: 33,
+    wind: 33,
     location: 'Dang',
-    high: NA,
-    low: NA,
+    high: 3,
+    low: 1,
   });
 
   const [currentTime, setCurrentTime] = useState(new Date());
