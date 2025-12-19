@@ -6,6 +6,7 @@ import { ControlPanelPopup } from './ControlPanelPopup';
 import { SearchPopup } from './SearchPopup';
 import { Window } from './Window';
 import { DesktopIcon } from './DesktopIcon';
+import { WeatherWidget } from './WeatherWidget';
 import { FileExplorer } from './apps/FileExplorer';
 import { ControlPanel } from './apps/ControlPanel';
 import { BrowserApp } from './apps/BrowserApp';
@@ -159,6 +160,11 @@ export function Desktop() {
             />
           </div>
         ))}
+      </div>
+
+      {/* Weather Widget */}
+      <div className="absolute top-4 right-4 z-10">
+        <WeatherWidget />
       </div>
 
       {/* Windows */}

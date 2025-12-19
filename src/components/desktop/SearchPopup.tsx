@@ -177,7 +177,7 @@ export function SearchPopup({ isOpen, onClose }: SearchPopupProps) {
   return (
     <>
       <div className="fixed inset-0 z-[900] bg-black/20 backdrop-blur-sm" onClick={onClose} />
-      <div className="fixed bottom-14 left-1/2 -translate-x-1/2 w-[95%] max-w-[600px] glass rounded-2xl overflow-hidden z-[950] animate-scale-in window-shadow">
+      <div className="fixed bottom-14 left-0 right-0 mx-auto w-[95%] max-w-[600px] glass rounded-2xl overflow-hidden z-[950] animate-scale-in window-shadow">
         {/* Search Input */}
         <div className="p-4 border-b border-border/50">
           <div className="flex items-center gap-3 bg-secondary/50 rounded-xl px-4 py-3">
