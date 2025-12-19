@@ -205,9 +205,9 @@ export function Taskbar({ onSearchClick }: TaskbarProps) {
             setIsStartMenuOpen(false);
           }}
         >
-          <Wifi className="w-4 h-4" />
-          <Volume2 className="w-4 h-4" />
-          <Battery className="w-4 h-4" />
+          <Wifi className="w-5 h-5" />
+          <Volume2 className="w-5 h-5" />
+          <Battery className="w-5 h-5" />
         </button>
         
         <button 
