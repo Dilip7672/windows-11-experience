@@ -37,7 +37,7 @@ export function PDFViewer({ fileName = "portfolio.pdf" }: PDFViewerProps) {
           {/* Header */}
           <div className="text-center border-b border-border/50 pb-6">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
-              John Doe
+              Dilip Poudel
             </h1>
             <p className="text-lg text-muted-foreground mt-2">Creating my way to Data Science</p>
             <div className="flex items-center justify-center gap-4 mt-4 text-sm text-muted-foreground">
