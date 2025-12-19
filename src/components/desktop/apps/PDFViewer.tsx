@@ -39,16 +39,16 @@ export function PDFViewer({ fileName = "portfolio.pdf" }: PDFViewerProps) {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
               John Doe
             </h1>
-            <p className="text-lg text-muted-foreground mt-2">Full Stack Developer</p>
+            <p className="text-lg text-muted-foreground mt-2">Creating my way to Data Science</p>
             <div className="flex items-center justify-center gap-4 mt-4 text-sm text-muted-foreground">
-              <span>📧 john.doe@email.com</span>
-              <span>📱 +1 (555) 123-4567</span>
-              <span>📍 New York, NY</span>
+              <span>📧 mail@dilippoudel.com.np</span>
+              <span>📱 +977 9823444798</span>
+              <span>📍 Dang, Nepal</span>
             </div>
             <div className="flex items-center justify-center gap-4 mt-2 text-sm">
-              <a href="#" className="text-primary hover:underline">🔗 linkedin.com/in/johndoe</a>
-              <a href="#" className="text-primary hover:underline">🐙 github.com/johndoe</a>
-              <a href="#" className="text-primary hover:underline">🌐 johndoe.dev</a>
+              <a href="#" className="text-primary hover:underline">🔗 linkedin.com/in/dilippou789</a>
+              <a href="#" className="text-primary hover:underline">🐙 github.com/Dilip7672</a>
+              <a href="#" className="text-primary hover:underline">🌐 dilippoudel.com.np</a>
             </div>
           </div>
 
@@ -62,7 +62,12 @@ export function PDFViewer({ fileName = "portfolio.pdf" }: PDFViewerProps) {
               Passionate Full Stack Developer with 5+ years of experience building scalable web applications. 
               Proficient in React, Node.js, TypeScript, and cloud technologies. Strong problem-solving skills 
               with a focus on creating user-friendly, performant solutions. Open source contributor and 
-              continuous learner committed to staying current with emerging technologies.
+              continuous learner committed to staying current with emerging technologies.Passionate Geospatial
+              Data Science learner with a strong foundation in spatial analysis, data visualization, and 
+              Python-based data processing. Experienced in working with GIS tools, remote sensing data,
+              and geospatial libraries such as GeoPandas and QGIS. Driven by curiosity and problem-solving,
+              with a focus on extracting meaningful insights from spatial data to support data-driven decision-making.
+              Committed to continuous learning and staying updated with emerging geospatial and data science technologies.
             </p>
           </section>
 
@@ -74,9 +79,9 @@ export function PDFViewer({ fileName = "portfolio.pdf" }: PDFViewerProps) {
             </h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <h3 className="font-medium text-sm mb-2">Frontend</h3>
+                <h3 className="font-medium text-sm mb-2">Python</h3>
                 <div className="flex flex-wrap gap-2">
-                  {['React', 'TypeScript', 'Next.js', 'Tailwind CSS', 'Redux'].map(skill => (
+                  {['Pandas', 'Numpy', 'Geopanda', 'Geopandas'].map(skill => (
                     <span key={skill} className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
                       {skill}
                     </span>
@@ -84,9 +89,9 @@ export function PDFViewer({ fileName = "portfolio.pdf" }: PDFViewerProps) {
                 </div>
               </div>
               <div>
-                <h3 className="font-medium text-sm mb-2">Backend</h3>
+                <h3 className="font-medium text-sm mb-2">GIS</h3>
                 <div className="flex flex-wrap gap-2">
-                  {['Node.js', 'Express', 'PostgreSQL', 'MongoDB', 'GraphQL'].map(skill => (
+                  {['QGIS', 'ArcGIS', 'OGIS'].map(skill => (
                     <span key={skill} className="px-2 py-1 bg-green-500/10 text-green-500 text-xs rounded-full">
                       {skill}
                     </span>
@@ -94,9 +99,9 @@ export function PDFViewer({ fileName = "portfolio.pdf" }: PDFViewerProps) {
                 </div>
               </div>
               <div>
-                <h3 className="font-medium text-sm mb-2">Cloud & DevOps</h3>
+                <h3 className="font-medium text-sm mb-2">SQL</h3>
                 <div className="flex flex-wrap gap-2">
-                  {['AWS', 'Docker', 'Kubernetes', 'CI/CD', 'Vercel'].map(skill => (
+                  {['Postgres', 'MySQL'].map(skill => (
                     <span key={skill} className="px-2 py-1 bg-orange-500/10 text-orange-500 text-xs rounded-full">
                       {skill}
                     </span>
@@ -106,7 +111,7 @@ export function PDFViewer({ fileName = "portfolio.pdf" }: PDFViewerProps) {
               <div>
                 <h3 className="font-medium text-sm mb-2">Tools</h3>
                 <div className="flex flex-wrap gap-2">
-                  {['Git', 'VS Code', 'Figma', 'Jira', 'Postman'].map(skill => (
+                  {['Git', 'VS Code',].map(skill => (
                     <span key={skill} className="px-2 py-1 bg-purple-500/10 text-purple-500 text-xs rounded-full">
                       {skill}
                     </span>
@@ -117,109 +122,123 @@ export function PDFViewer({ fileName = "portfolio.pdf" }: PDFViewerProps) {
           </section>
 
           {/* Experience */}
-          <section>
-            <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">
-              <span className="w-1.5 h-6 bg-primary rounded-full"></span>
-              Work Experience
-            </h2>
-            <div className="space-y-4">
-              <div className="border-l-2 border-primary/30 pl-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold">Senior Full Stack Developer</h3>
-                    <p className="text-primary text-sm">TechCorp Inc.</p>
-                  </div>
-                  <span className="text-sm text-muted-foreground">2022 - Present</span>
-                </div>
-                <ul className="mt-2 text-sm text-muted-foreground space-y-1">
-                  <li>• Led development of microservices architecture serving 1M+ users</li>
-                  <li>• Reduced load times by 40% through performance optimizations</li>
-                  <li>• Mentored team of 5 junior developers</li>
-                </ul>
-              </div>
-              <div className="border-l-2 border-primary/30 pl-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold">Full Stack Developer</h3>
-                    <p className="text-primary text-sm">StartupXYZ</p>
-                  </div>
-                  <span className="text-sm text-muted-foreground">2020 - 2022</span>
-                </div>
-                <ul className="mt-2 text-sm text-muted-foreground space-y-1">
-                  <li>• Built e-commerce platform from scratch using React and Node.js</li>
-                  <li>• Implemented real-time features using WebSockets</li>
-                  <li>• Integrated payment gateways (Stripe, PayPal)</li>
-                </ul>
-              </div>
-              <div className="border-l-2 border-primary/30 pl-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold">Frontend Developer</h3>
-                    <p className="text-primary text-sm">DigitalAgency Co.</p>
-                  </div>
-                  <span className="text-sm text-muted-foreground">2019 - 2020</span>
-                </div>
-                <ul className="mt-2 text-sm text-muted-foreground space-y-1">
-                  <li>• Developed responsive web applications for 20+ clients</li>
-                  <li>• Improved accessibility compliance to WCAG 2.1 standards</li>
-                </ul>
-              </div>
-            </div>
-          </section>
+       <section>
+  <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">
+    <span className="w-1.5 h-6 bg-primary rounded-full"></span>
+    Experience & Learning Journey
+  </h2>
+
+  <div className="space-y-4">
+    <div className="border-l-2 border-primary/30 pl-4">
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="font-semibold">Geospatial Data Science Learner</h3>
+          <p className="text-primary text-sm">Self-Directed Learning</p>
+        </div>
+        <span className="text-sm text-muted-foreground">2023 – Present</span>
+      </div>
+      <ul className="mt-2 text-sm text-muted-foreground space-y-1">
+        <li>• Learning spatial data analysis using Python (GeoPandas, Shapely, Rasterio)</li>
+        <li>• Working with GIS tools such as QGIS for mapping and spatial visualization</li>
+        <li>• Exploring remote sensing datasets (Sentinel, Landsat) and raster processing</li>
+        <li>• Building small projects involving spatial data cleaning, analysis, and mapping</li>
+      </ul>
+    </div>
+
+    <div className="border-l-2 border-primary/30 pl-4">
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="font-semibold">Python & Data Analysis Learner</h3>
+          <p className="text-primary text-sm">Academic & Online Platforms</p>
+        </div>
+        <span className="text-sm text-muted-foreground">2022 – 2023</span>
+      </div>
+      <ul className="mt-2 text-sm text-muted-foreground space-y-1">
+        <li>• Practiced data analysis using Pandas, NumPy, and Matplotlib</li>
+        <li>• Applied basic statistical concepts to real-world datasets</li>
+        <li>• Developed Jupyter Notebook workflows for data exploration</li>
+      </ul>
+    </div>
+
+    <div className="border-l-2 border-primary/30 pl-4">
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="font-semibold">Web & Visualization Foundations</h3>
+          <p className="text-primary text-sm">Project-Based Learning</p>
+        </div>
+        <span className="text-sm text-muted-foreground">2021 – 2022</span>
+      </div>
+      <ul className="mt-2 text-sm text-muted-foreground space-y-1">
+        <li>• Built interactive visualizations using JavaScript and web mapping libraries</li>
+        <li>• Learned basics of Leaflet and Mapbox for geospatial web maps</li>
+        <li>• Focused on clean UI and user-friendly data presentation</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
 
           {/* Education */}
-          <section>
-            <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">
-              <span className="w-1.5 h-6 bg-primary rounded-full"></span>
-              Education
-            </h2>
-            <div className="border-l-2 border-primary/30 pl-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-semibold">Bachelor of Science in Computer Science</h3>
-                  <p className="text-primary text-sm">University of Technology</p>
-                </div>
-                <span className="text-sm text-muted-foreground">2015 - 2019</span>
-              </div>
-              <p className="mt-1 text-sm text-muted-foreground">GPA: 3.8/4.0 | Dean's List</p>
-            </div>
-          </section>
+                 <section>
+                      <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">
+                      <span className="w-1.5 h-6 bg-primary rounded-full"></span>
+                      Education
+                      </h2>
+        
+                        <div className="border-l-2 border-primary/30 pl-4">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="font-semibold">Bachelor of Civil Engineering</h3>
+                          <p className="text-primary text-sm">University / Engineering College</p>
+                        </div>
+                        <span className="text-sm text-muted-foreground">2021 – Present</span>
+                      </div>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Relevant Coursework: Structural Analysis, Geotechnical Engineering, Transportation Engineering, Hydrology
+                      </p>
+                    </div>
+            </section>
+
 
           {/* Projects */}
-          <section>
-            <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">
-              <span className="w-1.5 h-6 bg-primary rounded-full"></span>
-              Notable Projects
-            </h2>
-            <div className="grid gap-3">
-              <div className="p-3 rounded-lg bg-secondary/30 border border-border/50">
-                <h3 className="font-semibold">🚀 TaskFlow - Project Management Tool</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Full-stack application with real-time collaboration, Kanban boards, and team analytics.
-                  Built with React, Node.js, Socket.io, and PostgreSQL.
-                </p>
-              </div>
-              <div className="p-3 rounded-lg bg-secondary/30 border border-border/50">
-                <h3 className="font-semibold">🛒 ShopSmart - E-commerce Platform</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Scalable marketplace with inventory management, payment processing, and analytics dashboard.
-                  Tech stack: Next.js, Stripe, MongoDB, Redis.
-                </p>
-              </div>
-              <div className="p-3 rounded-lg bg-secondary/30 border border-border/50">
-                <h3 className="font-semibold">🤖 DevBot - AI Code Assistant</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  VS Code extension powered by GPT-4 for code generation, refactoring suggestions, and documentation.
-                  50K+ downloads on VS Code Marketplace.
-                </p>
-              </div>
-            </div>
-          </section>
+         <section>
+  <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">
+    <span className="w-1.5 h-6 bg-primary rounded-full"></span>
+    Notable Projects
+  </h2>
+
+  <div className="grid gap-3">
+    <div className="p-3 rounded-lg bg-secondary/30 border border-border/50">
+      <h3 className="font-semibold">🗺️ GIS-Based Land Use & Land Cover Analysis</h3>
+      <p className="text-sm text-muted-foreground mt-1">
+        Performed land use and land cover classification using satellite imagery to analyze urban growth patterns.
+        Utilized QGIS, remote sensing data (Sentinel/Landsat), and basic spatial analysis techniques.
+      </p>
+    </div>
+
+    <div className="p-3 rounded-lg bg-secondary/30 border border-border/50">
+      <h3 className="font-semibold">🌧️ Flood Susceptibility Mapping Using GIS</h3>
+      <p className="text-sm text-muted-foreground mt-1">
+        Developed a flood susceptibility map by integrating terrain, drainage, rainfall, and land use data.
+        Applied spatial overlay and weighted analysis to support disaster risk assessment.
+      </p>
+    </div>
+
+    <div className="p-3 rounded-lg bg-secondary/30 border border-border/50">
+      <h3 className="font-semibold">📊 Python-Based Spatial Data Analysis Project</h3>
+      <p className="text-sm text-muted-foreground mt-1">
+        Analyzed geospatial datasets using Python libraries such as GeoPandas and Matplotlib.
+        Created maps and visualizations to support civil engineering planning and decision-making.
+      </p>
+    </div>
+  </div>
+</section>
+
 
           {/* Footer */}
           <div className="text-center pt-4 border-t border-border/50 text-xs text-muted-foreground">
             <p>References available upon request</p>
-            <p className="mt-1">Last updated: December 2024</p>
+            <p className="mt-1">Last updated: December 2025</p>
           </div>
         </div>
       </div>
