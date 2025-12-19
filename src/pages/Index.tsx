@@ -6,7 +6,7 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>Windows 11 Portfolio | Interactive Desktop Experience</title>
+        <title>Dilip Poudel | Stepping foot in Data journey</title>
         <meta name="description" content="Experience a Windows 11 style interactive desktop portfolio with working apps, dark mode, and social media integration." />
       </Helmet>
       <DesktopProvider>
