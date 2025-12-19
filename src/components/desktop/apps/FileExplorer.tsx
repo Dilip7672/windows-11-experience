@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronDown, Folder, File, Home, Star, Clock, Download, Image, Music, Video, FileText, ExternalLink } from 'lucide-react';
+import { ChevronRight, ChevronDown, Folder, Home, Star, Clock, Download, Image, Music, Video, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useDesktop } from '@/contexts/DesktopContext';
+import { PDFViewer } from './PDFViewer';
 
 interface FolderItem {
   id: string;
@@ -8,67 +10,22 @@ interface FolderItem {
   type: 'folder' | 'file';
   icon?: React.ReactNode;
   children?: FolderItem[];
-  link?: string;
   description?: string;
 }
 
-const projects: FolderItem[] = [
-  {
-    id: 'projects',
-    name: 'Projects',
-    type: 'folder',
-    children: [
-      {
-        id: 'portfolio',
-        name: 'Portfolio Website',
-        type: 'folder',
-        children: [
-          { id: 'p1', name: 'index.html', type: 'file', icon: <FileText className="w-4 h-4 text-orange-500" /> },
-          { id: 'p2', name: 'styles.css', type: 'file', icon: <FileText className="w-4 h-4 text-blue-500" /> },
-          { id: 'p3', name: 'app.js', type: 'file', icon: <FileText className="w-4 h-4 text-yellow-500" /> },
-        ]
-      },
-      {
-        id: 'ecommerce',
-        name: 'E-Commerce App',
-        type: 'folder',
-        description: 'Full-stack shopping platform built with React & Node.js',
-        children: [
-          { id: 'e1', name: 'README.md', type: 'file' },
-          { id: 'e2', name: 'package.json', type: 'file' },
-        ]
-      },
-      {
-        id: 'dashboard',
-        name: 'Analytics Dashboard',
-        type: 'folder',
-        description: 'Real-time data visualization with D3.js',
-        children: [
-          { id: 'd1', name: 'App.tsx', type: 'file' },
-          { id: 'd2', name: 'components/', type: 'folder' },
-        ]
-      },
-      {
-        id: 'chatbot',
-        name: 'AI Chatbot',
-        type: 'folder',
-        description: 'GPT-powered conversational interface',
-      },
-      {
-        id: 'weather',
-        name: 'Weather App',
-        type: 'folder',
-        description: 'Beautiful weather forecasts with geolocation',
-      },
-    ]
-  },
+const fileSystem: FolderItem[] = [
   {
     id: 'documents',
     name: 'Documents',
     type: 'folder',
     children: [
-      { id: 'doc1', name: 'Resume.pdf', type: 'file', icon: <FileText className="w-4 h-4 text-red-500" /> },
-      { id: 'doc2', name: 'Cover Letter.docx', type: 'file', icon: <FileText className="w-4 h-4 text-blue-500" /> },
+      { 
+        id: 'portfolio', 
+        name: 'portfolio.pdf', 
+        type: 'file', 
+        icon: <FileText className="w-4 h-4 text-red-500" />,
+        description: 'My professional portfolio'
+      },
     ]
   },
   {
@@ -104,9 +61,10 @@ const quickAccess = [
 ];
 
 export function FileExplorer() {
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['projects']));
-  const [selectedItem, setSelectedItem] = useState<string | null>('projects');
-  const [currentPath, setCurrentPath] = useState(['This PC', 'Projects']);
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['documents']));
+  const [selectedItem, setSelectedItem] = useState<string | null>('documents');
+  const [currentPath, setCurrentPath] = useState(['This PC', 'Documents']);
+  const { openWindow } = useDesktop();
 
   const toggleFolder = (id: string) => {
     setExpandedFolders(prev => {
@@ -120,6 +78,26 @@ export function FileExplorer() {
     });
   };
 
+  const handleFileDoubleClick = (item: FolderItem) => {
+    if (item.id === 'portfolio' && item.type === 'file') {
+      const centerX = window.innerWidth / 2 - 350;
+      const centerY = window.innerHeight / 2 - 275;
+      
+      openWindow({
+        id: 'portfolio',
+        title: 'portfolio.pdf',
+        icon: '📄',
+        isMinimized: false,
+        isMaximized: false,
+        x: centerX,
+        y: centerY,
+        width: 700,
+        height: 550,
+        content: <PDFViewer />,
+      });
+    }
+  };
+
   const renderTreeItem = (item: FolderItem, level: number = 0) => {
     const isExpanded = expandedFolders.has(item.id);
     const isSelected = selectedItem === item.id;
@@ -129,8 +107,8 @@ export function FileExplorer() {
       <div key={item.id}>
         <button
           className={cn(
-            "w-full flex items-center gap-2 px-2 py-1 rounded text-sm hover-effect",
-            isSelected && "bg-primary/10 text-primary"
+            "w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm transition-all duration-200",
+            isSelected ? "bg-primary/15 text-primary" : "hover:bg-secondary/50"
           )}
           style={{ paddingLeft: `${level * 16 + 8}px` }}
           onClick={() => {
@@ -139,17 +117,18 @@ export function FileExplorer() {
               toggleFolder(item.id);
             }
           }}
+          onDoubleClick={() => handleFileDoubleClick(item)}
         >
           {item.type === 'folder' && (
             <span className="w-4 h-4 flex items-center justify-center">
               {hasChildren && (isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />)}
             </span>
           )}
-          {item.icon || (item.type === 'folder' ? <Folder className="w-4 h-4 text-yellow-500" /> : <File className="w-4 h-4" />)}
+          {item.icon || (item.type === 'folder' ? <Folder className="w-4 h-4 text-yellow-500" /> : <FileText className="w-4 h-4" />)}
           <span className="truncate">{item.name}</span>
         </button>
         {hasChildren && isExpanded && (
-          <div>
+          <div className="animate-fade-in">
             {item.children!.map(child => renderTreeItem(child, level + 1))}
           </div>
         )}
@@ -167,7 +146,7 @@ export function FileExplorer() {
         }
       }
     };
-    return findItem(projects);
+    return findItem(fileSystem);
   };
 
   const selectedFolder = getSelectedFolder();
@@ -178,13 +157,13 @@ export function FileExplorer() {
       <div className="w-48 border-r border-border/50 p-2 overflow-y-auto hidden sm:block">
         {/* Quick Access */}
         <div className="mb-4">
-          <p className="text-xs text-muted-foreground px-2 py-1">Quick access</p>
+          <p className="text-xs text-muted-foreground px-2 py-1 font-medium">Quick access</p>
           {quickAccess.map(item => (
             <button
               key={item.id}
               className={cn(
-                "w-full flex items-center gap-2 px-2 py-1.5 rounded text-sm hover-effect",
-                selectedItem === item.id && "bg-primary/10 text-primary"
+                "w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm transition-all duration-200",
+                selectedItem === item.id ? "bg-primary/15 text-primary" : "hover:bg-secondary/50"
               )}
               onClick={() => setSelectedItem(item.id)}
             >
@@ -196,19 +175,19 @@ export function FileExplorer() {
 
         {/* Tree View */}
         <div>
-          <p className="text-xs text-muted-foreground px-2 py-1">This PC</p>
-          {projects.map(item => renderTreeItem(item))}
+          <p className="text-xs text-muted-foreground px-2 py-1 font-medium">This PC</p>
+          {fileSystem.map(item => renderTreeItem(item))}
         </div>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Path Bar */}
-        <div className="flex items-center gap-1 px-3 py-2 border-b border-border/50 text-sm">
+        <div className="flex items-center gap-1 px-3 py-2 border-b border-border/50 text-sm bg-secondary/20">
           {currentPath.map((segment, i) => (
             <React.Fragment key={i}>
               {i > 0 && <ChevronRight className="w-3 h-3 text-muted-foreground" />}
-              <button className="hover:bg-secondary/50 px-1.5 py-0.5 rounded">
+              <button className="hover:bg-secondary/50 px-2 py-1 rounded-lg transition-colors">
                 {segment}
               </button>
             </React.Fragment>
@@ -219,27 +198,23 @@ export function FileExplorer() {
         <div className="flex-1 p-4 overflow-y-auto">
           {selectedFolder?.type === 'folder' && selectedFolder.children ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {selectedFolder.children.map(item => (
+              {selectedFolder.children.map((item, index) => (
                 <button
                   key={item.id}
-                  className="flex flex-col items-center p-3 rounded-lg hover-effect group"
-                  onDoubleClick={() => {
-                    if (item.type === 'folder') {
-                      setSelectedItem(item.id);
-                      toggleFolder(item.id);
-                    }
-                  }}
+                  className="flex flex-col items-center p-4 rounded-xl hover:bg-secondary/50 group transition-all duration-200 animate-fade-in"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                  onDoubleClick={() => handleFileDoubleClick(item)}
                 >
-                  <div className="relative">
+                  <div className="relative transition-transform duration-200 group-hover:scale-110">
                     {item.type === 'folder' ? (
-                      <Folder className="w-12 h-12 text-yellow-500" />
+                      <Folder className="w-14 h-14 text-yellow-500" />
                     ) : (
-                      item.icon || <File className="w-12 h-12 text-muted-foreground" />
+                      <FileText className="w-14 h-14 text-red-500" />
                     )}
                   </div>
-                  <span className="text-xs mt-2 text-center line-clamp-2">{item.name}</span>
+                  <span className="text-xs mt-2 text-center line-clamp-2 font-medium">{item.name}</span>
                   {item.description && (
-                    <span className="text-[10px] text-muted-foreground mt-1 text-center line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-[10px] text-muted-foreground mt-1 text-center opacity-0 group-hover:opacity-100 transition-opacity">
                       {item.description}
                     </span>
                   )}
@@ -248,17 +223,20 @@ export function FileExplorer() {
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {projects.map(item => (
+              {fileSystem.map((item, index) => (
                 <button
                   key={item.id}
-                  className="flex flex-col items-center p-3 rounded-lg hover-effect"
+                  className="flex flex-col items-center p-4 rounded-xl hover:bg-secondary/50 transition-all duration-200 group animate-fade-in"
+                  style={{ animationDelay: `${index * 50}ms` }}
                   onClick={() => {
                     setSelectedItem(item.id);
                     if (item.type === 'folder') toggleFolder(item.id);
                   }}
                 >
-                  {item.icon || <Folder className="w-12 h-12 text-yellow-500" />}
-                  <span className="text-xs mt-2 text-center">{item.name}</span>
+                  <div className="transition-transform duration-200 group-hover:scale-110">
+                    {item.icon || <Folder className="w-14 h-14 text-yellow-500" />}
+                  </div>
+                  <span className="text-xs mt-2 text-center font-medium">{item.name}</span>
                 </button>
               ))}
             </div>
@@ -266,8 +244,8 @@ export function FileExplorer() {
         </div>
 
         {/* Status Bar */}
-        <div className="flex items-center justify-between px-3 py-1.5 border-t border-border/50 text-xs text-muted-foreground">
-          <span>{selectedFolder?.children?.length || projects.length} items</span>
+        <div className="flex items-center justify-between px-3 py-2 border-t border-border/50 text-xs text-muted-foreground bg-secondary/20">
+          <span>{selectedFolder?.children?.length || fileSystem.length} items</span>
           <span>Windows 11 Style</span>
         </div>
       </div>
