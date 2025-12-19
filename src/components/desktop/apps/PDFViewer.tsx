@@ -189,9 +189,9 @@ export function PDFViewer({ fileName = "portfolio.pdf" }: PDFViewerProps) {
                       <div className="flex items-start justify-between">
                         <div>
                           <h3 className="font-semibold">Bachelor of Civil Engineering</h3>
-                          <p className="text-primary text-sm">University / Engineering College</p>
+                          <p className="text-primary text-sm">Rapti Engineering College</p>
                         </div>
-                        <span className="text-sm text-muted-foreground">2021 – Present</span>
+                        <span className="text-sm text-muted-foreground">2022 – Present</span>
                       </div>
                       <p className="mt-1 text-sm text-muted-foreground">
                         Relevant Coursework: Structural Analysis, Geotechnical Engineering, Transportation Engineering, Hydrology
