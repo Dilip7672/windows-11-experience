@@ -228,7 +228,7 @@ export function StartMenu() {
       />
       
       {/* Start Menu */}
-      <div className="fixed bottom-14 left-1/2 -translate-x-1/2 w-[95%] max-w-[600px] glass rounded-2xl overflow-hidden z-[950] animate-slide-up window-shadow">
+      <div className="fixed bottom-14 left-0 right-0 mx-auto w-[95%] max-w-[600px] glass rounded-2xl overflow-hidden z-[950] animate-slide-up window-shadow">
         {/* Search Bar */}
         <div className="p-4 pb-2">
           <div className="flex items-center gap-3 bg-secondary/50 rounded-full px-4 py-2.5">
