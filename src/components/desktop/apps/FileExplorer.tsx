@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronDown, Folder, Home, Star, Clock, Download, Image, Music, Video, FileText } from 'lucide-react';
+import { ChevronRight, ChevronDown, Folder, Home, Star, Clock, Download, Image, Music, Video, FileText, Gamepad2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDesktop } from '@/contexts/DesktopContext';
 import { PDFViewer } from './PDFViewer';
+import { PhotosApp } from './PhotosApp';
+import { SnakeGame } from './SnakeGame';
 
 interface FolderItem {
   id: string;
@@ -11,6 +13,7 @@ interface FolderItem {
   icon?: React.ReactNode;
   children?: FolderItem[];
   description?: string;
+  appType?: 'pdf' | 'photos' | 'snake';
 }
 
 const fileSystem: FolderItem[] = [
@@ -24,7 +27,8 @@ const fileSystem: FolderItem[] = [
         name: 'portfolio.pdf', 
         type: 'file', 
         icon: <FileText className="w-4 h-4 text-red-500" />,
-        description: 'My professional portfolio'
+        description: 'My professional portfolio',
+        appType: 'pdf'
       },
     ]
   },
@@ -38,6 +42,16 @@ const fileSystem: FolderItem[] = [
     name: 'Pictures',
     type: 'folder',
     icon: <Image className="w-4 h-4 text-green-500" />,
+    children: [
+      { 
+        id: 'photos-app', 
+        name: 'Photos', 
+        type: 'file', 
+        icon: <Image className="w-4 h-4 text-green-500" />,
+        description: 'View photos and videos',
+        appType: 'photos'
+      },
+    ]
   },
   {
     id: 'music',
@@ -51,6 +65,22 @@ const fileSystem: FolderItem[] = [
     type: 'folder',
     icon: <Video className="w-4 h-4 text-purple-500" />,
   },
+  {
+    id: 'games',
+    name: 'Games',
+    type: 'folder',
+    icon: <Gamepad2 className="w-4 h-4 text-orange-500" />,
+    children: [
+      { 
+        id: 'snake-game', 
+        name: 'Snake', 
+        type: 'file', 
+        icon: <Gamepad2 className="w-4 h-4 text-orange-500" />,
+        description: 'Classic snake game',
+        appType: 'snake'
+      },
+    ]
+  },
 ];
 
 const quickAccess = [
@@ -61,7 +91,7 @@ const quickAccess = [
 ];
 
 export function FileExplorer() {
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['documents']));
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['documents', 'pictures', 'games']));
   const [selectedItem, setSelectedItem] = useState<string | null>('documents');
   const [currentPath, setCurrentPath] = useState(['This PC', 'Documents']);
   const { openWindow } = useDesktop();
@@ -79,10 +109,10 @@ export function FileExplorer() {
   };
 
   const handleFileDoubleClick = (item: FolderItem) => {
-    if (item.id === 'portfolio' && item.type === 'file') {
-      const centerX = window.innerWidth / 2 - 350;
-      const centerY = window.innerHeight / 2 - 275;
-      
+    const centerX = window.innerWidth / 2 - 350;
+    const centerY = window.innerHeight / 2 - 275;
+    
+    if (item.appType === 'pdf') {
       openWindow({
         id: 'portfolio',
         title: 'portfolio.pdf',
@@ -94,6 +124,32 @@ export function FileExplorer() {
         width: 700,
         height: 550,
         content: <PDFViewer />,
+      });
+    } else if (item.appType === 'photos') {
+      openWindow({
+        id: 'photos',
+        title: 'Photos',
+        icon: '🖼️',
+        isMinimized: false,
+        isMaximized: false,
+        x: centerX - 50,
+        y: centerY - 50,
+        width: 750,
+        height: 550,
+        content: <PhotosApp />,
+      });
+    } else if (item.appType === 'snake') {
+      openWindow({
+        id: 'snake',
+        title: 'Snake Game',
+        icon: '🐍',
+        isMinimized: false,
+        isMaximized: false,
+        x: centerX,
+        y: centerY,
+        width: 400,
+        height: 500,
+        content: <SnakeGame />,
       });
     }
   };
@@ -208,6 +264,10 @@ export function FileExplorer() {
                   <div className="relative transition-transform duration-200 group-hover:scale-110">
                     {item.type === 'folder' ? (
                       <Folder className="w-14 h-14 text-yellow-500" />
+                    ) : item.icon ? (
+                      <div className="w-14 h-14 flex items-center justify-center">
+                        {React.cloneElement(item.icon as React.ReactElement, { className: 'w-10 h-10' })}
+                      </div>
                     ) : (
                       <FileText className="w-14 h-14 text-red-500" />
                     )}
@@ -234,7 +294,13 @@ export function FileExplorer() {
                   }}
                 >
                   <div className="transition-transform duration-200 group-hover:scale-110">
-                    {item.icon || <Folder className="w-14 h-14 text-yellow-500" />}
+                    {item.icon ? (
+                      <div className="w-14 h-14 flex items-center justify-center">
+                        {React.cloneElement(item.icon as React.ReactElement, { className: 'w-10 h-10' })}
+                      </div>
+                    ) : (
+                      <Folder className="w-14 h-14 text-yellow-500" />
+                    )}
                   </div>
                   <span className="text-xs mt-2 text-center font-medium">{item.name}</span>
                 </button>

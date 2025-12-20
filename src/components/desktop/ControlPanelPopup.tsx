@@ -1,11 +1,13 @@
 import React from 'react';
 import { useDesktop } from '@/contexts/DesktopContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import { Moon, Sun, Wifi, Bluetooth, Volume2, Battery, Plane, MapPin, Focus, Accessibility } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 
 export function ControlPanelPopup() {
   const { isControlPanelOpen, setIsControlPanelOpen, isDarkMode, toggleDarkMode } = useDesktop();
+  const { volume, setVolume, brightness, setBrightness } = useSettings();
 
   if (!isControlPanelOpen) return null;
 
@@ -64,11 +66,25 @@ export function ControlPanelPopup() {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <Sun className="w-4 h-4 text-muted-foreground" />
-            <Slider defaultValue={[75]} max={100} step={1} className="flex-1" />
+            <Slider 
+              value={[brightness]} 
+              onValueChange={(val) => setBrightness(val[0])}
+              max={100} 
+              step={1} 
+              className="flex-1" 
+            />
+            <span className="text-xs text-muted-foreground w-8">{brightness}%</span>
           </div>
           <div className="flex items-center gap-3">
             <Volume2 className="w-4 h-4 text-muted-foreground" />
-            <Slider defaultValue={[50]} max={100} step={1} className="flex-1" />
+            <Slider 
+              value={[volume]} 
+              onValueChange={(val) => setVolume(val[0])}
+              max={100} 
+              step={1} 
+              className="flex-1" 
+            />
+            <span className="text-xs text-muted-foreground w-8">{volume}%</span>
           </div>
         </div>
 

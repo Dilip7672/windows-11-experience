@@ -5,11 +5,15 @@ import { cn } from '@/lib/utils';
 import { FileExplorer } from './apps/FileExplorer';
 import { ControlPanel } from './apps/ControlPanel';
 import { BrowserApp } from './apps/BrowserApp';
+import { PhotosApp } from './apps/PhotosApp';
+import { SnakeGame } from './apps/SnakeGame';
+
 interface TaskbarProps {
   onSearchClick: () => void;
   isSearchOpen: boolean;
   setSearchOpen: (open: boolean) => void;
 }
+
 export function Taskbar({
   onSearchClick,
   isSearchOpen,
@@ -26,10 +30,12 @@ export function Taskbar({
     activeWindowId
   } = useDesktop();
   const [currentTime, setCurrentTime] = useState(new Date());
+  
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+  
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('en-US', {
       hour: 'numeric',
@@ -37,6 +43,7 @@ export function Taskbar({
       hour12: true
     });
   };
+  
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', {
       month: 'short',
@@ -44,6 +51,7 @@ export function Taskbar({
       year: 'numeric'
     });
   };
+  
   const handleAppClick = (appId: string) => {
     const centerX = window.innerWidth / 2 - 300;
     const centerY = window.innerHeight / 2 - 250;
@@ -95,8 +103,37 @@ export function Taskbar({
           content: <BrowserApp url="https://github.com" title="GitHub" />
         });
         break;
+      case 'photos':
+        openWindow({
+          id: 'photos',
+          title: 'Photos',
+          icon: '🖼️',
+          isMinimized: false,
+          isMaximized: false,
+          x: centerX - 50,
+          y: centerY - 50,
+          width: 750,
+          height: 550,
+          content: <PhotosApp />
+        });
+        break;
+      case 'snake':
+        openWindow({
+          id: 'snake',
+          title: 'Snake Game',
+          icon: '🐍',
+          isMinimized: false,
+          isMaximized: false,
+          x: centerX,
+          y: centerY,
+          width: 400,
+          height: 500,
+          content: <SnakeGame />
+        });
+        break;
     }
   };
+  
   const pinnedApps = [{
     id: 'file-explorer',
     icon: <Folder className="w-5 h-5" />,
@@ -115,7 +152,9 @@ export function Taskbar({
       </svg>,
     name: 'Settings'
   }];
-  return <div className="fixed bottom-0 left-0 right-0 h-12 glass-strong flex items-center justify-center px-2 z-[1000]" onClick={(e) => e.stopPropagation()}>
+  
+  return (
+    <div className="fixed bottom-0 left-0 right-0 h-12 glass-strong flex items-center justify-center px-2 z-[1000]" onClick={(e) => e.stopPropagation()}>
       {/* Center Section - Main Icons */}
       <div className="flex items-center gap-0.5">
         {/* Start Button */}
@@ -181,5 +220,6 @@ export function Taskbar({
           <span className="text-muted-foreground text-xs">{formatDate(currentTime)}</span>
         </button>
       </div>
-    </div>;
+    </div>
+  );
 }
