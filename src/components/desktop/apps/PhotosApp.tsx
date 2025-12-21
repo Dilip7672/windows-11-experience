@@ -12,14 +12,19 @@ interface MediaItem {
   thumbnail?: string;
 }
 
-// Sample media items
+// Sample media items with reliable demo images
 const mediaItems: MediaItem[] = [
-  { id: '1', name: 'Sunset Beach', type: 'image', src: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200' },
-  { id: '2', name: 'Mountain View', type: 'image', src: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200' },
-  { id: '3', name: 'City Lights', type: 'image', src: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1200' },
-  { id: '4', name: 'Forest Path', type: 'image', src: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=1200' },
-  { id: '5', name: 'Ocean Waves', type: 'image', src: 'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=1200' },
-  { id: '6', name: 'Sample Video', type: 'video', src: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+  { id: '1', name: 'Sunset Beach', type: 'image', src: 'https://picsum.photos/id/1015/1200/800' },
+  { id: '2', name: 'Mountain View', type: 'image', src: 'https://picsum.photos/id/1018/1200/800' },
+  { id: '3', name: 'City Skyline', type: 'image', src: 'https://picsum.photos/id/1026/1200/800' },
+  { id: '4', name: 'Forest Trail', type: 'image', src: 'https://picsum.photos/id/1036/1200/800' },
+  { id: '5', name: 'Ocean View', type: 'image', src: 'https://picsum.photos/id/1040/1200/800' },
+  { id: '6', name: 'Desert Landscape', type: 'image', src: 'https://picsum.photos/id/1050/1200/800' },
+  { id: '7', name: 'Waterfall', type: 'image', src: 'https://picsum.photos/id/1039/1200/800' },
+  { id: '8', name: 'Lake Reflection', type: 'image', src: 'https://picsum.photos/id/1043/1200/800' },
+  { id: '9', name: 'Autumn Road', type: 'image', src: 'https://picsum.photos/id/1047/1200/800' },
+  { id: '10', name: 'Canyon View', type: 'image', src: 'https://picsum.photos/id/1060/1200/800' },
+  { id: '11', name: 'Sample Video', type: 'video', src: 'https://www.w3schools.com/html/mov_bbb.mp4' },
 ];
 
 export function PhotosApp() {
