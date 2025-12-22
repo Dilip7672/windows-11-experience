@@ -129,7 +129,7 @@
   }
 
   .hover-effect {
-    @apply transition-colors duration-150;
+    @apply transition-all duration-150;
   }
 
   .hover-effect:hover {
@@ -195,7 +195,90 @@
   background: hsl(var(--muted-foreground) / 0.5);
 }
 
-/* Animations */
+/* ==================== ANIMATIONS ==================== */
+
+/* Start Menu Open/Close */
+@keyframes startMenuOpen {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes startMenuClose {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+}
+
+/* Window Animations */
+@keyframes windowOpen {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.01) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes windowClose {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+@keyframes windowMinimize {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.7) translateY(100px);
+  }
+}
+
+@keyframes windowRestore {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) translateY(100px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes windowMaximize {
+  0% {
+    border-radius: 12px;
+  }
+  100% {
+    border-radius: 0;
+  }
+}
+
+/* Fade and Scale */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -204,6 +287,17 @@
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98) translateY(8px);
   }
 }
 
@@ -218,6 +312,17 @@
   }
 }
 
+@keyframes slideDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
 @keyframes scaleIn {
   from {
     opacity: 0;
@@ -229,14 +334,157 @@
   }
 }
 
+@keyframes scaleOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* Bounce effect for icons */
+@keyframes iconBounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.05);
+  }
+}
+
+/* Subtle pulse for active elements */
+@keyframes subtlePulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Backdrop blur in */
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(12px);
+  }
+}
+
+@keyframes backdropFadeOut {
+  from {
+    opacity: 1;
+    backdrop-filter: blur(12px);
+  }
+  to {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+}
+
+/* Staggered list item animation */
+@keyframes listItemIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Animation Classes */
+.animate-start-menu-open {
+  animation: startMenuOpen 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-start-menu-close {
+  animation: startMenuClose 0.2s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.animate-window-open {
+  animation: windowOpen 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-window-close {
+  animation: windowClose 0.15s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.animate-window-minimize {
+  animation: windowMinimize 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.animate-window-restore {
+  animation: windowRestore 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
 .animate-fade-in {
   animation: fadeIn 0.2s ease-out forwards;
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.2s ease-out forwards;
 }
 
 .animate-slide-up {
   animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+.animate-slide-down {
+  animation: slideDown 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
 .animate-scale-in {
   animation: scaleIn 0.2s ease-out forwards;
+}
+
+.animate-scale-out {
+  animation: scaleOut 0.15s ease-out forwards;
+}
+
+.animate-icon-bounce {
+  animation: iconBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.animate-backdrop-in {
+  animation: backdropFadeIn 0.25s ease-out forwards;
+}
+
+.animate-backdrop-out {
+  animation: backdropFadeOut 0.2s ease-out forwards;
+}
+
+.animate-list-item {
+  animation: listItemIn 0.2s ease-out forwards;
+}
+
+/* Transition utilities */
+.transition-smooth {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.transition-bounce {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Hover lift effect */
+.hover-lift {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Focus ring animation */
+.focus-ring-animate:focus {
+  animation: subtlePulse 1.5s infinite;
 }
