@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { useDesktop, WindowState } from '@/contexts/DesktopContext';
 import { useSettings } from '@/contexts/SettingsContext';
-import { Minus, Square, X, Maximize2, Columns, LayoutGrid } from 'lucide-react';
+import { Minus, Square, X, Maximize2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -20,7 +20,20 @@ export function Window({ window }: WindowProps) {
   const [lastClickTime, setLastClickTime] = useState(0);
   const [snapPosition, setSnapPosition] = useState<SnapPosition>('none');
   const [showSnapPreview, setShowSnapPreview] = useState<SnapPosition>('none');
+  const [isClosing, setIsClosing] = useState(false);
+  const [isMinimizing, setIsMinimizing] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [wasMinimized, setWasMinimized] = useState(false);
   const isMobile = useIsMobile();
+
+  // Track when window is restored from minimized state
+  useEffect(() => {
+    if (wasMinimized && !window.isMinimized) {
+      setIsRestoring(true);
+      setTimeout(() => setIsRestoring(false), 300);
+    }
+    setWasMinimized(window.isMinimized);
+  }, [window.isMinimized, wasMinimized]);
 
   const handleDoubleClick = useCallback(() => {
     const now = Date.now();
@@ -36,10 +49,8 @@ export function Window({ window }: WindowProps) {
     handleDoubleClick();
     if (isMobile) return;
     
-    // Allow dragging even in maximized mode
     setIsDragging(true);
     if (window.isMaximized) {
-      // Calculate proportional position when un-maximizing
       const proportion = e.clientX / globalThis.innerWidth;
       setDragOffset({
         x: window.width * proportion,
@@ -59,13 +70,11 @@ export function Window({ window }: WindowProps) {
     const edgeThreshold = 50;
     const cornerThreshold = 100;
 
-    // Check corners first
     if (x < cornerThreshold && y < cornerThreshold) return 'top-left';
     if (x > screenWidth - cornerThreshold && y < cornerThreshold) return 'top-right';
     if (x < cornerThreshold && y > screenHeight - cornerThreshold) return 'bottom-left';
     if (x > screenWidth - cornerThreshold && y > screenHeight - cornerThreshold) return 'bottom-right';
     
-    // Check edges
     if (x < edgeThreshold) return 'left';
     if (x > screenWidth - edgeThreshold) return 'right';
     
@@ -75,7 +84,6 @@ export function Window({ window }: WindowProps) {
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging || isMobile) return;
     
-    // If maximized and dragging, un-maximize first
     if (window.isMaximized) {
       maximizeWindow(window.id);
     }
@@ -84,7 +92,6 @@ export function Window({ window }: WindowProps) {
     const newY = Math.max(0, Math.min(e.clientY - dragOffset.y, globalThis.innerHeight - 100));
     updateWindowPosition(window.id, newX, newY);
     
-    // Check for snap preview
     const snapPos = getSnapPositionFromMouse(e.clientX, e.clientY);
     setShowSnapPreview(snapPos);
   }, [isDragging, window.isMaximized, window.id, dragOffset, updateWindowPosition, isMobile, maximizeWindow]);
@@ -173,7 +180,24 @@ export function Window({ window }: WindowProps) {
     }
   }, [isDragging, handleTouchMove]);
 
-  if (window.isMinimized) return null;
+  // Handle close with animation
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      closeWindow(window.id);
+    }, 150);
+  };
+
+  // Handle minimize with animation
+  const handleMinimize = () => {
+    setIsMinimizing(true);
+    setTimeout(() => {
+      minimizeWindow(window.id);
+      setIsMinimizing(false);
+    }, 250);
+  };
+
+  if (window.isMinimized && !isMinimizing) return null;
 
   // On mobile, always fullscreen; on desktop, respect the window state
   const windowStyle = isMobile
@@ -197,12 +221,20 @@ export function Window({ window }: WindowProps) {
     }
   };
 
+  // Determine animation class
+  const getAnimationClass = () => {
+    if (isClosing) return 'animate-window-close';
+    if (isMinimizing) return 'animate-window-minimize';
+    if (isRestoring) return 'animate-window-restore';
+    return 'animate-window-open';
+  };
+
   return (
     <>
       {/* Snap Preview */}
       {showSnapPreview !== 'none' && (
         <div 
-          className="fixed bg-primary/20 border-2 border-primary rounded-lg pointer-events-none z-[9999]"
+          className="fixed bg-primary/20 border-2 border-primary rounded-lg pointer-events-none z-[9999] animate-scale-in"
           style={getSnapPreviewStyle()}
         />
       )}
@@ -210,12 +242,16 @@ export function Window({ window }: WindowProps) {
       <div
         ref={windowRef}
         className={cn(
-          "absolute glass window-shadow overflow-hidden flex flex-col animate-scale-in",
+          "absolute glass window-shadow overflow-hidden flex flex-col",
           "rounded-none md:rounded-xl",
           window.isFocused ? "ring-1 ring-primary/30" : "",
-          !isMobile && window.isMaximized ? "md:rounded-none" : ""
+          !isMobile && window.isMaximized ? "md:rounded-none" : "",
+          getAnimationClass()
         )}
-        style={windowStyle}
+        style={{
+          ...windowStyle,
+          transition: isDragging ? 'none' : 'border-radius 0.2s ease'
+        }}
         onClick={() => focusWindow(window.id)}
       >
         {/* Title Bar */}
@@ -236,18 +272,20 @@ export function Window({ window }: WindowProps) {
           <div className="flex items-center window-controls flex-shrink-0">
             <button
               className={cn(
-                "w-10 h-10 md:w-11 md:h-8 flex items-center justify-center hover-effect transition-colors",
-                accentOnTitleBars ? "hover:bg-white/20" : "hover:bg-muted"
+                "w-10 h-10 md:w-11 md:h-8 flex items-center justify-center transition-all duration-150",
+                accentOnTitleBars ? "hover:bg-white/20" : "hover:bg-muted",
+                "active:scale-95"
               )}
-              onClick={(e) => { e.stopPropagation(); minimizeWindow(window.id); }}
+              onClick={(e) => { e.stopPropagation(); handleMinimize(); }}
             >
               <Minus className="w-5 h-5 md:w-4 md:h-4" />
             </button>
             {!isMobile && (
               <button
                 className={cn(
-                  "w-10 h-10 md:w-11 md:h-8 flex items-center justify-center hover-effect transition-colors",
-                  accentOnTitleBars ? "hover:bg-white/20" : "hover:bg-muted"
+                  "w-10 h-10 md:w-11 md:h-8 flex items-center justify-center transition-all duration-150",
+                  accentOnTitleBars ? "hover:bg-white/20" : "hover:bg-muted",
+                  "active:scale-95"
                 )}
                 onClick={(e) => { e.stopPropagation(); maximizeWindow(window.id); }}
               >
@@ -256,11 +294,12 @@ export function Window({ window }: WindowProps) {
             )}
             <button
               className={cn(
-                "w-10 h-10 md:w-11 md:h-8 flex items-center justify-center hover-effect transition-colors",
+                "w-10 h-10 md:w-11 md:h-8 flex items-center justify-center transition-all duration-150",
                 "hover:bg-destructive hover:text-destructive-foreground",
+                "active:scale-95",
                 !isMobile && "md:rounded-tr-xl"
               )}
-              onClick={(e) => { e.stopPropagation(); closeWindow(window.id); }}
+              onClick={(e) => { e.stopPropagation(); handleClose(); }}
             >
               <X className="w-5 h-5 md:w-4 md:h-4" />
             </button>
