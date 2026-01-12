@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDesktop } from '@/contexts/DesktopContext';
 import { Taskbar } from './Taskbar';
 import { StartMenu } from './StartMenu';
@@ -7,6 +7,7 @@ import { SearchPopup } from './SearchPopup';
 import { Window } from './Window';
 import { DesktopIcon } from './DesktopIcon';
 import { WeatherWidget } from './WeatherWidget';
+import { ContextMenu } from './ContextMenu';
 import { FileExplorer } from './apps/FileExplorer';
 import { ControlPanel } from './apps/ControlPanel';
 import { BrowserApp } from './apps/BrowserApp';
@@ -44,6 +45,27 @@ export function Desktop() {
   } = useDesktop();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; isOpen: boolean; type: 'desktop' | 'file' }>({
+    x: 0,
+    y: 0,
+    isOpen: false,
+    type: 'desktop'
+  });
+
+  // Disable browser context menu globally
+  useEffect(() => {
+    const handleContextMenu = (e: MouseEvent) => {
+      // Allow context menu in input fields
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        return;
+      }
+      e.preventDefault();
+    };
+
+    document.addEventListener('contextmenu', handleContextMenu);
+    return () => document.removeEventListener('contextmenu', handleContextMenu);
+  }, []);
 
   // Open portfolio.pdf on first load
   useEffect(() => {
@@ -73,6 +95,32 @@ export function Desktop() {
     setIsStartMenuOpen(false);
     setIsControlPanelOpen(false);
     setIsSearchOpen(false);
+    setContextMenu(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const handleDesktopContextMenu = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      isOpen: true,
+      type: 'desktop'
+    });
+  }, []);
+
+  const handleContextMenuAction = (action: string) => {
+    switch (action) {
+      case 'refresh':
+        window.location.reload();
+        break;
+      case 'personalize':
+      case 'display':
+        handleIconClick('settings');
+        break;
+      default:
+        console.log('Action:', action);
+    }
   };
 
   const handleIconClick = (id: string) => {
@@ -129,6 +177,7 @@ export function Desktop() {
     <div 
       className="fixed inset-0 overflow-hidden select-none"
       onClick={handleDesktopClick}
+      onContextMenu={handleDesktopContextMenu}
     >
       {/* Wallpaper */}
       <div 
@@ -171,6 +220,16 @@ export function Desktop() {
       {windows.map(window => (
         <Window key={window.id} window={window} />
       ))}
+
+      {/* Context Menu */}
+      <ContextMenu 
+        x={contextMenu.x}
+        y={contextMenu.y}
+        isOpen={contextMenu.isOpen}
+        onClose={() => setContextMenu(prev => ({ ...prev, isOpen: false }))}
+        type={contextMenu.type}
+        onAction={handleContextMenuAction}
+      />
 
       {/* Start Menu */}
       <StartMenu />
