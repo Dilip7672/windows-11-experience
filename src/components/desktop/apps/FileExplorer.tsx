@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { ChevronRight, ChevronDown, Folder, Home, Star, Clock, Download, Image, Music, Video, FileText, Gamepad2, ArrowLeft, Menu, StickyNote } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDesktop } from '@/contexts/DesktopContext';
 import { PDFViewer } from './PDFViewer';
 import { PhotosApp } from './PhotosApp';
 import { SnakeGame } from './SnakeGame';
+import { ContextMenu } from '../ContextMenu';
 
 interface FolderItem {
   id: string;
@@ -120,7 +121,20 @@ export function FileExplorer() {
   const [currentPath, setCurrentPath] = useState<string[]>(['This PC']);
   const [navigationHistory, setNavigationHistory] = useState<string[]>([]);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; isOpen: boolean }>({
+    x: 0, y: 0, isOpen: false
+  });
   const { openWindow } = useDesktop();
+
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      isOpen: true
+    });
+  }, []);
 
   const toggleFolder = (id: string) => {
     setExpandedFolders(prev => {
@@ -281,7 +295,16 @@ export function FileExplorer() {
   const selectedFolder = getSelectedFolder();
 
   return (
-    <div className="flex h-full relative">
+    <div className="flex h-full relative" onContextMenu={handleContextMenu}>
+      {/* Context Menu */}
+      <ContextMenu
+        x={contextMenu.x}
+        y={contextMenu.y}
+        isOpen={contextMenu.isOpen}
+        onClose={() => setContextMenu(prev => ({ ...prev, isOpen: false }))}
+        type="file"
+      />
+
       {/* Mobile Sidebar Overlay */}
       {showMobileSidebar && (
         <div 
