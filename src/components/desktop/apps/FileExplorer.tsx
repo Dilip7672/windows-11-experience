@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronDown, Folder, Home, Star, Clock, Download, Image, Music, Video, FileText, Gamepad2 } from 'lucide-react';
+import { ChevronRight, ChevronDown, Folder, Home, Star, Clock, Download, Image, Music, Video, FileText, Gamepad2, ArrowLeft, Menu, StickyNote } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDesktop } from '@/contexts/DesktopContext';
 import { PDFViewer } from './PDFViewer';
@@ -13,7 +13,7 @@ interface FolderItem {
   icon?: React.ReactNode;
   children?: FolderItem[];
   description?: string;
-  appType?: 'pdf' | 'photos' | 'snake';
+  appType?: 'pdf' | 'photos' | 'snake' | 'pdf-ecommerce' | 'pdf-pandas';
 }
 
 const fileSystem: FolderItem[] = [
@@ -29,6 +29,30 @@ const fileSystem: FolderItem[] = [
         icon: <FileText className="w-4 h-4 text-red-500" />,
         description: 'My professional portfolio',
         appType: 'pdf'
+      },
+    ]
+  },
+  {
+    id: 'notes',
+    name: 'Notes',
+    type: 'folder',
+    icon: <StickyNote className="w-4 h-4 text-yellow-500" />,
+    children: [
+      { 
+        id: 'ecommerce-analysis', 
+        name: 'ecommerceanalysis.pdf', 
+        type: 'file', 
+        icon: <FileText className="w-4 h-4 text-red-500" />,
+        description: 'E-commerce data analysis',
+        appType: 'pdf-ecommerce'
+      },
+      { 
+        id: 'pandas-importants', 
+        name: 'pandasimportants.pdf', 
+        type: 'file', 
+        icon: <FileText className="w-4 h-4 text-red-500" />,
+        description: 'Pandas important concepts',
+        appType: 'pdf-pandas'
       },
     ]
   },
@@ -91,9 +115,11 @@ const quickAccess = [
 ];
 
 export function FileExplorer() {
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['documents', 'pictures', 'games']));
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['documents', 'pictures', 'games', 'notes']));
   const [selectedItem, setSelectedItem] = useState<string | null>('documents');
-  const [currentPath, setCurrentPath] = useState(['This PC', 'Documents']);
+  const [currentPath, setCurrentPath] = useState<string[]>(['This PC']);
+  const [navigationHistory, setNavigationHistory] = useState<string[]>([]);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const { openWindow } = useDesktop();
 
   const toggleFolder = (id: string) => {
@@ -125,6 +151,32 @@ export function FileExplorer() {
         height: 550,
         content: <PDFViewer />,
       });
+    } else if (item.appType === 'pdf-ecommerce') {
+      openWindow({
+        id: 'ecommerce-pdf',
+        title: 'ecommerceanalysis.pdf',
+        icon: '📄',
+        isMinimized: false,
+        isMaximized: false,
+        x: centerX + 20,
+        y: centerY + 20,
+        width: 700,
+        height: 550,
+        content: <PDFViewer fileName="ecommerceanalysis.pdf" pdfType="ecommerce" />,
+      });
+    } else if (item.appType === 'pdf-pandas') {
+      openWindow({
+        id: 'pandas-pdf',
+        title: 'pandasimportants.pdf',
+        icon: '📄',
+        isMinimized: false,
+        isMaximized: false,
+        x: centerX + 40,
+        y: centerY + 40,
+        width: 700,
+        height: 550,
+        content: <PDFViewer fileName="pandasimportants.pdf" pdfType="pandas" />,
+      });
     } else if (item.appType === 'photos') {
       openWindow({
         id: 'photos',
@@ -151,6 +203,27 @@ export function FileExplorer() {
         height: 500,
         content: <SnakeGame />,
       });
+    }
+  };
+
+  const handleFolderClick = (item: FolderItem) => {
+    if (item.type === 'folder') {
+      setNavigationHistory(prev => [...prev, selectedItem || 'home']);
+      setSelectedItem(item.id);
+      setCurrentPath(prev => [...prev, item.name]);
+      toggleFolder(item.id);
+    }
+  };
+
+  const handleGoBack = () => {
+    if (navigationHistory.length > 0) {
+      const previousItem = navigationHistory[navigationHistory.length - 1];
+      setNavigationHistory(prev => prev.slice(0, -1));
+      setSelectedItem(previousItem);
+      setCurrentPath(prev => prev.slice(0, -1));
+    } else {
+      setSelectedItem(null);
+      setCurrentPath(['This PC']);
     }
   };
 
@@ -208,9 +281,21 @@ export function FileExplorer() {
   const selectedFolder = getSelectedFolder();
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full relative">
+      {/* Mobile Sidebar Overlay */}
+      {showMobileSidebar && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 sm:hidden"
+          onClick={() => setShowMobileSidebar(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <div className="w-48 border-r border-border/50 p-2 overflow-y-auto hidden sm:block">
+      <div className={cn(
+        "w-48 border-r border-border/50 p-2 overflow-y-auto bg-background z-50 transition-transform duration-300",
+        "fixed sm:relative inset-y-0 left-0 h-full sm:translate-x-0",
+        showMobileSidebar ? "translate-x-0" : "-translate-x-full sm:translate-x-0"
+      )}>
         {/* Quick Access */}
         <div className="mb-4">
           <p className="text-xs text-muted-foreground px-2 py-1 font-medium">Quick access</p>
@@ -221,7 +306,10 @@ export function FileExplorer() {
                 "w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm transition-all duration-200",
                 selectedItem === item.id ? "bg-primary/15 text-primary" : "hover:bg-secondary/50"
               )}
-              onClick={() => setSelectedItem(item.id)}
+              onClick={() => {
+                setSelectedItem(item.id);
+                setShowMobileSidebar(false);
+              }}
             >
               {item.icon}
               <span>{item.name}</span>
@@ -237,44 +325,74 @@ export function FileExplorer() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        {/* Path Bar */}
-        <div className="flex items-center gap-1 px-3 py-2 border-b border-border/50 text-sm bg-secondary/20">
-          {currentPath.map((segment, i) => (
-            <React.Fragment key={i}>
-              {i > 0 && <ChevronRight className="w-3 h-3 text-muted-foreground" />}
-              <button className="hover:bg-secondary/50 px-2 py-1 rounded-lg transition-colors">
-                {segment}
-              </button>
-            </React.Fragment>
-          ))}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Path Bar with Navigation */}
+        <div className="flex items-center gap-1 px-2 py-2 border-b border-border/50 text-sm bg-secondary/20">
+          {/* Mobile menu button */}
+          <button 
+            className="p-1.5 rounded-lg hover:bg-secondary/50 transition-colors sm:hidden"
+            onClick={() => setShowMobileSidebar(true)}
+          >
+            <Menu className="w-4 h-4" />
+          </button>
+          
+          {/* Back button */}
+          <button 
+            className={cn(
+              "p-1.5 rounded-lg transition-colors",
+              navigationHistory.length > 0 || selectedItem 
+                ? "hover:bg-secondary/50" 
+                : "opacity-50 cursor-not-allowed"
+            )}
+            onClick={handleGoBack}
+            disabled={navigationHistory.length === 0 && !selectedItem}
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+
+          <div className="flex items-center gap-1 overflow-x-auto flex-1">
+            {currentPath.map((segment, i) => (
+              <React.Fragment key={i}>
+                {i > 0 && <ChevronRight className="w-3 h-3 text-muted-foreground flex-shrink-0" />}
+                <button className="hover:bg-secondary/50 px-2 py-1 rounded-lg transition-colors whitespace-nowrap text-xs sm:text-sm">
+                  {segment}
+                </button>
+              </React.Fragment>
+            ))}
+          </div>
         </div>
 
         {/* Content Grid */}
-        <div className="flex-1 p-4 overflow-y-auto">
+        <div className="flex-1 p-3 sm:p-4 overflow-y-auto">
           {selectedFolder?.type === 'folder' && selectedFolder.children ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
               {selectedFolder.children.map((item, index) => (
                 <button
                   key={item.id}
-                  className="flex flex-col items-center p-4 rounded-xl hover:bg-secondary/50 group transition-all duration-200 animate-fade-in"
+                  className="flex flex-col items-center p-3 sm:p-4 rounded-xl hover:bg-secondary/50 active:bg-secondary/70 group transition-all duration-200 animate-fade-in touch-manipulation"
                   style={{ animationDelay: `${index * 50}ms` }}
-                  onDoubleClick={() => handleFileDoubleClick(item)}
+                  onClick={() => {
+                    if (item.type === 'folder') {
+                      handleFolderClick(item);
+                    } else {
+                      handleFileDoubleClick(item);
+                    }
+                  }}
                 >
                   <div className="relative transition-transform duration-200 group-hover:scale-110">
                     {item.type === 'folder' ? (
-                      <Folder className="w-14 h-14 text-yellow-500" />
+                      <Folder className="w-10 h-10 sm:w-14 sm:h-14 text-yellow-500" />
                     ) : item.icon ? (
-                      <div className="w-14 h-14 flex items-center justify-center">
-                        {React.cloneElement(item.icon as React.ReactElement, { className: 'w-10 h-10' })}
+                      <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center">
+                        {React.cloneElement(item.icon as React.ReactElement, { className: 'w-8 h-8 sm:w-10 sm:h-10' })}
                       </div>
                     ) : (
-                      <FileText className="w-14 h-14 text-red-500" />
+                      <FileText className="w-10 h-10 sm:w-14 sm:h-14 text-red-500" />
                     )}
                   </div>
-                  <span className="text-xs mt-2 text-center line-clamp-2 font-medium">{item.name}</span>
+                  <span className="text-[10px] sm:text-xs mt-2 text-center line-clamp-2 font-medium">{item.name}</span>
                   {item.description && (
-                    <span className="text-[10px] text-muted-foreground mt-1 text-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-[9px] sm:text-[10px] text-muted-foreground mt-1 text-center opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block">
                       {item.description}
                     </span>
                   )}
@@ -282,27 +400,24 @@ export function FileExplorer() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
               {fileSystem.map((item, index) => (
                 <button
                   key={item.id}
-                  className="flex flex-col items-center p-4 rounded-xl hover:bg-secondary/50 transition-all duration-200 group animate-fade-in"
+                  className="flex flex-col items-center p-3 sm:p-4 rounded-xl hover:bg-secondary/50 active:bg-secondary/70 transition-all duration-200 group animate-fade-in touch-manipulation"
                   style={{ animationDelay: `${index * 50}ms` }}
-                  onClick={() => {
-                    setSelectedItem(item.id);
-                    if (item.type === 'folder') toggleFolder(item.id);
-                  }}
+                  onClick={() => handleFolderClick(item)}
                 >
                   <div className="transition-transform duration-200 group-hover:scale-110">
                     {item.icon ? (
-                      <div className="w-14 h-14 flex items-center justify-center">
-                        {React.cloneElement(item.icon as React.ReactElement, { className: 'w-10 h-10' })}
+                      <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center">
+                        {React.cloneElement(item.icon as React.ReactElement, { className: 'w-8 h-8 sm:w-10 sm:h-10' })}
                       </div>
                     ) : (
-                      <Folder className="w-14 h-14 text-yellow-500" />
+                      <Folder className="w-10 h-10 sm:w-14 sm:h-14 text-yellow-500" />
                     )}
                   </div>
-                  <span className="text-xs mt-2 text-center font-medium">{item.name}</span>
+                  <span className="text-[10px] sm:text-xs mt-2 text-center font-medium">{item.name}</span>
                 </button>
               ))}
             </div>
@@ -310,9 +425,9 @@ export function FileExplorer() {
         </div>
 
         {/* Status Bar */}
-        <div className="flex items-center justify-between px-3 py-2 border-t border-border/50 text-xs text-muted-foreground bg-secondary/20">
+        <div className="flex items-center justify-between px-3 py-2 border-t border-border/50 text-[10px] sm:text-xs text-muted-foreground bg-secondary/20">
           <span>{selectedFolder?.children?.length || fileSystem.length} items</span>
-          <span>Windows 11 Style</span>
+          <span className="hidden sm:inline">Windows 11 Style</span>
         </div>
       </div>
     </div>
