@@ -3,9 +3,44 @@ import { FileText, Download, ZoomIn, ZoomOut, Printer } from 'lucide-react';
 
 interface PDFViewerProps {
   fileName?: string;
+  pdfType?: 'portfolio' | 'ecommerce' | 'pandas';
 }
 
-export function PDFViewer({ fileName = "portfolio.pdf" }: PDFViewerProps) {
+export function PDFViewer({ fileName = "portfolio.pdf", pdfType = "portfolio" }: PDFViewerProps) {
+  // For external PDFs, show an embedded viewer
+  if (pdfType === 'ecommerce' || pdfType === 'pandas') {
+    const pdfPath = pdfType === 'ecommerce' 
+      ? '/documents/ecommerceanalysis.pdf' 
+      : '/documents/pandasimportants.pdf';
+    
+    return (
+      <div className="flex flex-col h-full bg-[hsl(var(--secondary))]">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-border/50 bg-background/50">
+          <div className="flex items-center gap-3">
+            <FileText className="w-5 h-5 text-red-500" />
+            <span className="text-sm font-medium">{fileName}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <a 
+              href={pdfPath} 
+              download 
+              className="p-2 rounded-lg hover:bg-secondary transition-colors"
+            >
+              <Download className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+        <div className="flex-1 overflow-hidden">
+          <iframe 
+            src={pdfPath} 
+            className="w-full h-full border-0"
+            title={fileName}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full bg-[hsl(var(--secondary))]">
       {/* Toolbar */}
