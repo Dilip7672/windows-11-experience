@@ -115,7 +115,7 @@ export function PDFViewer({ fileName = "portfolio.pdf", pdfType = "portfolio" }:
     printWindow.print();
   };
 
-  // For external PDFs (ecommerce and pandas)
+  // For external PDFs (ecommerce and pandas) - use embed for viewing
   if (pdfType === 'ecommerce' || pdfType === 'pandas') {
     const pdfPath = pdfType === 'ecommerce' 
       ? '/documents/ecommerceanalysis.pdf' 
@@ -151,27 +151,14 @@ export function PDFViewer({ fileName = "portfolio.pdf", pdfType = "portfolio" }:
             </button>
           </div>
         </div>
-        {/* Display PDF content as embedded object instead of iframe */}
-        <div className="flex-1 overflow-auto p-4 flex items-center justify-center bg-[hsl(var(--muted))]">
-          <div 
-            className="bg-background rounded-lg shadow-lg p-8 max-w-2xl w-full"
-            style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'top center' }}
-          >
-            <div className="text-center space-y-4">
-              <FileText className="w-16 h-16 text-red-500 mx-auto" />
-              <h3 className="text-lg font-semibold">{fileName}</h3>
-              <p className="text-sm text-muted-foreground">
-                Click the download button to view this PDF in your default PDF viewer.
-              </p>
-              <button
-                onClick={handleDownload}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                <Download className="w-4 h-4" />
-                Download PDF
-              </button>
-            </div>
-          </div>
+        {/* Embed PDF for viewing */}
+        <div className="flex-1 overflow-hidden bg-[hsl(var(--muted))]">
+          <embed
+            src={pdfPath}
+            type="application/pdf"
+            className="w-full h-full"
+            style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'top left' }}
+          />
         </div>
       </div>
     );

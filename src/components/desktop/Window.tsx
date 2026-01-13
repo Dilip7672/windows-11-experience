@@ -4,19 +4,24 @@ import { useSettings } from '@/contexts/SettingsContext';
 import { Minus, Square, X, Maximize2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ContextMenu } from './ContextMenu';
 
 interface WindowProps {
   window: WindowState;
 }
 
 type SnapPosition = 'none' | 'left' | 'right' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+type ResizeDirection = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | null;
 
 export function Window({ window }: WindowProps) {
   const { closeWindow, minimizeWindow, maximizeWindow, focusWindow, updateWindowPosition, updateWindowSize } = useDesktop();
   const { accentOnTitleBars } = useSettings();
   const windowRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeDirection, setResizeDirection] = useState<ResizeDirection>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0, windowX: 0, windowY: 0 });
   const [lastClickTime, setLastClickTime] = useState(0);
   const [snapPosition, setSnapPosition] = useState<SnapPosition>('none');
   const [showSnapPreview, setShowSnapPreview] = useState<SnapPosition>('none');
@@ -24,6 +29,7 @@ export function Window({ window }: WindowProps) {
   const [isMinimizing, setIsMinimizing] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
   const [wasMinimized, setWasMinimized] = useState(false);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; isOpen: boolean }>({ x: 0, y: 0, isOpen: false });
   const isMobile = useIsMobile();
 
   // Track when window is restored from minimized state
@@ -63,6 +69,80 @@ export function Window({ window }: WindowProps) {
       });
     }
   }, [focusWindow, window.id, window.x, window.y, window.width, window.isMaximized, isMobile, handleDoubleClick]);
+
+  // Resize handlers
+  const handleResizeStart = useCallback((e: React.MouseEvent, direction: ResizeDirection) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (window.isMaximized || isMobile) return;
+    
+    focusWindow(window.id);
+    setIsResizing(true);
+    setResizeDirection(direction);
+    setResizeStart({
+      x: e.clientX,
+      y: e.clientY,
+      width: window.width,
+      height: window.height,
+      windowX: window.x,
+      windowY: window.y
+    });
+  }, [window.isMaximized, window.id, window.width, window.height, window.x, window.y, isMobile, focusWindow]);
+
+  const handleResizeMove = useCallback((e: MouseEvent) => {
+    if (!isResizing || !resizeDirection) return;
+
+    const deltaX = e.clientX - resizeStart.x;
+    const deltaY = e.clientY - resizeStart.y;
+    
+    let newWidth = resizeStart.width;
+    let newHeight = resizeStart.height;
+    let newX = resizeStart.windowX;
+    let newY = resizeStart.windowY;
+
+    const minWidth = 200;
+    const minHeight = 150;
+
+    if (resizeDirection.includes('e')) {
+      newWidth = Math.max(minWidth, resizeStart.width + deltaX);
+    }
+    if (resizeDirection.includes('w')) {
+      const potentialWidth = resizeStart.width - deltaX;
+      if (potentialWidth >= minWidth) {
+        newWidth = potentialWidth;
+        newX = resizeStart.windowX + deltaX;
+      }
+    }
+    if (resizeDirection.includes('s')) {
+      newHeight = Math.max(minHeight, resizeStart.height + deltaY);
+    }
+    if (resizeDirection.includes('n')) {
+      const potentialHeight = resizeStart.height - deltaY;
+      if (potentialHeight >= minHeight) {
+        newHeight = potentialHeight;
+        newY = resizeStart.windowY + deltaY;
+      }
+    }
+
+    updateWindowSize(window.id, newWidth, newHeight);
+    updateWindowPosition(window.id, newX, newY);
+  }, [isResizing, resizeDirection, resizeStart, window.id, updateWindowSize, updateWindowPosition]);
+
+  const handleResizeEnd = useCallback(() => {
+    setIsResizing(false);
+    setResizeDirection(null);
+  }, []);
+
+  useEffect(() => {
+    if (isResizing) {
+      document.addEventListener('mousemove', handleResizeMove);
+      document.addEventListener('mouseup', handleResizeEnd);
+      return () => {
+        document.removeEventListener('mousemove', handleResizeMove);
+        document.removeEventListener('mouseup', handleResizeEnd);
+      };
+    }
+  }, [isResizing, handleResizeMove, handleResizeEnd]);
 
   const getSnapPositionFromMouse = (x: number, y: number): SnapPosition => {
     const screenWidth = globalThis.innerWidth;
@@ -197,6 +277,17 @@ export function Window({ window }: WindowProps) {
     }, 250);
   };
 
+  // Context menu handler
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      isOpen: true
+    });
+  }, []);
+
   if (window.isMinimized && !isMinimizing) return null;
 
   // On mobile, always fullscreen; on desktop, respect the window state
@@ -229,6 +320,9 @@ export function Window({ window }: WindowProps) {
     return 'animate-window-open';
   };
 
+  // Resize handle styles
+  const resizeHandleClass = "absolute z-10 opacity-0 hover:opacity-100 transition-opacity";
+
   return (
     <>
       {/* Snap Preview */}
@@ -250,10 +344,28 @@ export function Window({ window }: WindowProps) {
         )}
         style={{
           ...windowStyle,
-          transition: isDragging ? 'none' : 'border-radius 0.2s ease'
+          transition: isDragging || isResizing ? 'none' : 'border-radius 0.2s ease'
         }}
         onClick={() => focusWindow(window.id)}
+        onContextMenu={handleContextMenu}
       >
+        {/* Resize Handles - Only show on desktop and not maximized */}
+        {!isMobile && !window.isMaximized && (
+          <>
+            {/* Edges */}
+            <div className={cn(resizeHandleClass, "top-0 left-2 right-2 h-1 cursor-n-resize")} onMouseDown={(e) => handleResizeStart(e, 'n')} />
+            <div className={cn(resizeHandleClass, "bottom-0 left-2 right-2 h-1 cursor-s-resize")} onMouseDown={(e) => handleResizeStart(e, 's')} />
+            <div className={cn(resizeHandleClass, "left-0 top-2 bottom-2 w-1 cursor-w-resize")} onMouseDown={(e) => handleResizeStart(e, 'w')} />
+            <div className={cn(resizeHandleClass, "right-0 top-2 bottom-2 w-1 cursor-e-resize")} onMouseDown={(e) => handleResizeStart(e, 'e')} />
+            
+            {/* Corners */}
+            <div className={cn(resizeHandleClass, "top-0 left-0 w-3 h-3 cursor-nw-resize")} onMouseDown={(e) => handleResizeStart(e, 'nw')} />
+            <div className={cn(resizeHandleClass, "top-0 right-0 w-3 h-3 cursor-ne-resize")} onMouseDown={(e) => handleResizeStart(e, 'ne')} />
+            <div className={cn(resizeHandleClass, "bottom-0 left-0 w-3 h-3 cursor-sw-resize")} onMouseDown={(e) => handleResizeStart(e, 'sw')} />
+            <div className={cn(resizeHandleClass, "bottom-0 right-0 w-3 h-3 cursor-se-resize")} onMouseDown={(e) => handleResizeStart(e, 'se')} />
+          </>
+        )}
+
         {/* Title Bar */}
         <div
           className={cn(
@@ -311,6 +423,15 @@ export function Window({ window }: WindowProps) {
           {window.content}
         </div>
       </div>
+
+      {/* Context Menu */}
+      <ContextMenu 
+        x={contextMenu.x}
+        y={contextMenu.y}
+        isOpen={contextMenu.isOpen}
+        onClose={() => setContextMenu(prev => ({ ...prev, isOpen: false }))}
+        type="file"
+      />
     </>
   );
 }

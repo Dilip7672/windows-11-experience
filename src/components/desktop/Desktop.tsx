@@ -8,10 +8,12 @@ import { Window } from './Window';
 import { DesktopIcon } from './DesktopIcon';
 import { WeatherWidget } from './WeatherWidget';
 import { ContextMenu } from './ContextMenu';
+import { WallpaperPicker } from './WallpaperPicker';
 import { FileExplorer } from './apps/FileExplorer';
 import { ControlPanel } from './apps/ControlPanel';
 import { BrowserApp } from './apps/BrowserApp';
 import { PDFViewer } from './apps/PDFViewer';
+import { cn } from '@/lib/utils';
 
 const desktopIcons = [
   { id: 'file-explorer', icon: '📁', label: 'File Explorer' },
@@ -45,6 +47,10 @@ export function Desktop() {
   } = useDesktop();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [showWallpaperPicker, setShowWallpaperPicker] = useState(false);
+  const [wallpaper, setWallpaper] = useState(() => {
+    return localStorage.getItem('desktop-wallpaper') || 'gradient-to-br from-blue-600 via-blue-700 to-indigo-900';
+  });
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; isOpen: boolean; type: 'desktop' | 'file' }>({
     x: 0,
     y: 0,
@@ -52,10 +58,15 @@ export function Desktop() {
     type: 'desktop'
   });
 
+  // Save wallpaper to localStorage
+  const handleWallpaperChange = (newWallpaper: string) => {
+    setWallpaper(newWallpaper);
+    localStorage.setItem('desktop-wallpaper', newWallpaper);
+  };
+
   // Disable browser context menu globally
   useEffect(() => {
     const handleContextMenu = (e: MouseEvent) => {
-      // Allow context menu in input fields
       const target = e.target as HTMLElement;
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
         return;
@@ -115,6 +126,8 @@ export function Desktop() {
         window.location.reload();
         break;
       case 'personalize':
+        setShowWallpaperPicker(true);
+        break;
       case 'display':
         handleIconClick('settings');
         break;
@@ -173,6 +186,13 @@ export function Desktop() {
     }
   };
 
+  // Get wallpaper class
+  const getWallpaperClass = () => {
+    if (wallpaper === 'black') return 'bg-black';
+    if (wallpaper === 'white') return 'bg-white';
+    return `bg-${wallpaper}`;
+  };
+
   return (
     <div 
       className="fixed inset-0 overflow-hidden select-none"
@@ -181,7 +201,11 @@ export function Desktop() {
     >
       {/* Wallpaper */}
       <div 
-        className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-900 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-950 transition-all duration-700"
+        className={cn(
+          "absolute inset-0 transition-all duration-700",
+          getWallpaperClass(),
+          "dark:from-slate-900 dark:via-slate-800 dark:to-indigo-950"
+        )}
       >
         {/* Animated decorative elements */}
         <div className="absolute inset-0 opacity-30">
@@ -229,6 +253,14 @@ export function Desktop() {
         onClose={() => setContextMenu(prev => ({ ...prev, isOpen: false }))}
         type={contextMenu.type}
         onAction={handleContextMenuAction}
+      />
+
+      {/* Wallpaper Picker */}
+      <WallpaperPicker
+        isOpen={showWallpaperPicker}
+        onClose={() => setShowWallpaperPicker(false)}
+        currentWallpaper={wallpaper}
+        onSelect={handleWallpaperChange}
       />
 
       {/* Start Menu */}

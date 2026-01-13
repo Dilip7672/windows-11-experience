@@ -3,6 +3,11 @@ import { useDesktop } from '@/contexts/DesktopContext';
 import { FileExplorer } from './apps/FileExplorer';
 import { ControlPanel } from './apps/ControlPanel';
 import { BrowserApp } from './apps/BrowserApp';
+import { PhotosApp } from './apps/PhotosApp';
+import { SnakeGame } from './apps/SnakeGame';
+import { NotepadApp } from './apps/NotepadApp';
+import { CalculatorApp } from './apps/CalculatorApp';
+import { PowerMenu } from './PowerMenu';
 import { Power, User, Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -17,21 +22,22 @@ export function StartMenu() {
   const { isStartMenuOpen, setIsStartMenuOpen, openWindow } = useDesktop();
   const [isClosing, setIsClosing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showPowerMenu, setShowPowerMenu] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const pinnedApps: AppItem[] = [
     { id: 'file-explorer', name: 'File Explorer', icon: '📁' },
     { id: 'settings', name: 'Settings', icon: '⚙️' },
     { id: 'github', name: 'GitHub', icon: '🐙' },
+    { id: 'notepad', name: 'Notepad', icon: '📝' },
+    { id: 'calculator', name: 'Calculator', icon: '🔢' },
+    { id: 'photos', name: 'Photos', icon: '🖼️' },
+    { id: 'snake', name: 'Snake', icon: '🐍' },
     { id: 'facebook', name: 'Facebook', icon: '📘' },
     { id: 'instagram', name: 'Instagram', icon: '📷' },
     { id: 'twitter', name: 'Twitter/X', icon: '🐦' },
     { id: 'youtube', name: 'YouTube', icon: '▶️' },
     { id: 'spotify', name: 'Spotify', icon: '🎵' },
-    { id: 'calculator', name: 'Calculator', icon: '🔢' },
-    { id: 'notepad', name: 'Notepad', icon: '📝' },
-    { id: 'photos', name: 'Photos', icon: '🖼️' },
-    { id: 'terminal', name: 'Terminal', icon: '💻' },
   ];
 
   // Filter apps based on search query
@@ -89,6 +95,62 @@ export function StartMenu() {
           width: 600,
           height: 450,
           content: <ControlPanel />,
+        });
+        break;
+      case 'notepad':
+        openWindow({
+          id: 'notepad',
+          title: 'Notepad',
+          icon: '📝',
+          isMinimized: false,
+          isMaximized: false,
+          x: centerX + 20,
+          y: centerY + 20,
+          width: 600,
+          height: 450,
+          content: <NotepadApp />,
+        });
+        break;
+      case 'calculator':
+        openWindow({
+          id: 'calculator',
+          title: 'Calculator',
+          icon: '🔢',
+          isMinimized: false,
+          isMaximized: false,
+          x: centerX + 150,
+          y: centerY + 50,
+          width: 320,
+          height: 450,
+          content: <CalculatorApp />,
+        });
+        break;
+      case 'photos':
+        openWindow({
+          id: 'photos',
+          title: 'Photos',
+          icon: '🖼️',
+          isMinimized: false,
+          isMaximized: false,
+          x: centerX - 50,
+          y: centerY - 50,
+          width: 750,
+          height: 550,
+          content: <PhotosApp />,
+        });
+        break;
+      case 'snake':
+        openWindow({
+          id: 'snake',
+          title: 'Snake Game',
+          icon: '🐍',
+          isMinimized: false,
+          isMaximized: false,
+          x: centerX,
+          y: centerY,
+          width: 400,
+          height: 500,
+          content: <SnakeGame />,
         });
         break;
       case 'github':
@@ -314,11 +376,20 @@ export function StartMenu() {
             </div>
             <span className="text-sm">User</span>
           </button>
-          <button className="p-2 rounded-lg hover-effect hover:text-destructive transition-all duration-200">
+          <button 
+            onClick={() => setShowPowerMenu(true)}
+            className="p-2 rounded-lg hover-effect hover:text-destructive transition-all duration-200"
+          >
             <Power className="w-5 h-5" />
           </button>
         </div>
       </div>
+
+      {/* Power Menu */}
+      <PowerMenu 
+        isOpen={showPowerMenu} 
+        onClose={() => setShowPowerMenu(false)} 
+      />
     </>
   );
 }
