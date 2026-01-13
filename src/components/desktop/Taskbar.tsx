@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useDesktop } from '@/contexts/DesktopContext';
+import React, { useState, useEffect, useRef } from 'react';
+import { useDesktop, WindowState } from '@/contexts/DesktopContext';
 import { Wifi, Volume2, Battery, Search, Settings, Folder } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FileExplorer } from './apps/FileExplorer';
@@ -12,6 +12,46 @@ interface TaskbarProps {
   onSearchClick: () => void;
   isSearchOpen: boolean;
   setSearchOpen: (open: boolean) => void;
+}
+
+// Window Preview Component
+function WindowPreview({ window, onClose }: { window: WindowState; onClose: () => void }) {
+  const { focusWindow, closeWindow } = useDesktop();
+
+  return (
+    <div 
+      className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 glass rounded-lg overflow-hidden shadow-xl animate-fade-in z-[1001]"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="p-2 bg-secondary/50">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-sm">{window.icon}</span>
+            <span className="text-xs truncate">{window.title}</span>
+          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              closeWindow(window.id);
+              onClose();
+            }}
+            className="p-1 rounded hover:bg-destructive/20 hover:text-destructive transition-colors"
+          >
+            <span className="text-xs">×</span>
+          </button>
+        </div>
+      </div>
+      <div 
+        className="h-24 bg-background cursor-pointer hover:bg-secondary/20 transition-colors flex items-center justify-center"
+        onClick={() => {
+          focusWindow(window.id);
+          onClose();
+        }}
+      >
+        <span className="text-4xl opacity-50">{window.icon}</span>
+      </div>
+    </div>
+  );
 }
 
 export function Taskbar({
@@ -30,6 +70,8 @@ export function Taskbar({
     activeWindowId
   } = useDesktop();
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [hoveredWindowId, setHoveredWindowId] = useState<string | null>(null);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -50,6 +92,24 @@ export function Taskbar({
       day: 'numeric',
       year: 'numeric'
     });
+  };
+
+  const handleMouseEnter = (windowId: string) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredWindowId(windowId);
+    }, 300);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredWindowId(null);
+    }, 200);
   };
   
   const handleAppClick = (appId: string) => {
@@ -187,7 +247,19 @@ export function Taskbar({
         {pinnedApps.map(app => {
         const isOpen = windows.some(w => w.id === app.id);
         const isActive = activeWindowId === app.id;
-        return <button key={app.id} className={cn("taskbar-icon relative group", isActive && "bg-[hsl(var(--active-bg))]")} onClick={() => handleAppClick(app.id)}>
+        const appWindow = windows.find(w => w.id === app.id);
+        
+        return (
+          <div 
+            key={app.id} 
+            className="relative"
+            onMouseEnter={() => isOpen && handleMouseEnter(app.id)}
+            onMouseLeave={handleMouseLeave}
+          >
+            <button 
+              className={cn("taskbar-icon relative group", isActive && "bg-[hsl(var(--active-bg))]")} 
+              onClick={() => handleAppClick(app.id)}
+            >
               <div className="transition-transform group-hover:scale-110">
                 {app.icon}
               </div>
@@ -195,17 +267,47 @@ export function Taskbar({
               <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-background/90 backdrop-blur text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
                 {app.name}
               </div>
-            </button>;
+            </button>
+            
+            {/* Window Preview */}
+            {hoveredWindowId === app.id && appWindow && (
+              <WindowPreview 
+                window={appWindow} 
+                onClose={() => setHoveredWindowId(null)} 
+              />
+            )}
+          </div>
+        );
       })}
 
         {/* Open Windows (not in pinned) */}
-        {windows.filter(w => !pinnedApps.some(p => p.id === w.id)).map(window => <button key={window.id} className={cn("taskbar-icon relative group", window.isFocused && "bg-[hsl(var(--active-bg))]")} onClick={() => focusWindow(window.id)}>
-            <span className="text-xl transition-transform group-hover:scale-110">{window.icon}</span>
-            <div className={cn("absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 rounded-full bg-primary transition-all", window.isFocused ? "w-4" : "w-1.5")} />
-            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-background/90 backdrop-blur text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-              {window.title}
-            </div>
-          </button>)}
+        {windows.filter(w => !pinnedApps.some(p => p.id === w.id)).map(win => (
+          <div 
+            key={win.id}
+            className="relative"
+            onMouseEnter={() => handleMouseEnter(win.id)}
+            onMouseLeave={handleMouseLeave}
+          >
+            <button 
+              className={cn("taskbar-icon relative group", win.isFocused && "bg-[hsl(var(--active-bg))]")} 
+              onClick={() => focusWindow(win.id)}
+            >
+              <span className="text-xl transition-transform group-hover:scale-110">{win.icon}</span>
+              <div className={cn("absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 rounded-full bg-primary transition-all", win.isFocused ? "w-4" : "w-1.5")} />
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-background/90 backdrop-blur text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                {win.title}
+              </div>
+            </button>
+            
+            {/* Window Preview */}
+            {hoveredWindowId === win.id && (
+              <WindowPreview 
+                window={win} 
+                onClose={() => setHoveredWindowId(null)} 
+              />
+            )}
+          </div>
+        ))}
       </div>
 
       {/* Right Section - System Tray */}
