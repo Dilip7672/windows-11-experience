@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Power, Moon, RotateCcw, LogOut, X } from 'lucide-react';
+import { Power, Moon, RotateCcw, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface PowerMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  onSleep?: () => void;
 }
 
 type PowerAction = 'sleep' | 'restart' | 'shutdown' | null;
 
-export function PowerMenu({ isOpen, onClose }: PowerMenuProps) {
+export function PowerMenu({ isOpen, onClose, onSleep }: PowerMenuProps) {
   const [selectedAction, setSelectedAction] = useState<PowerAction>(null);
   const [countdown, setCountdown] = useState(3);
   const [isPerforming, setIsPerforming] = useState(false);
@@ -34,25 +35,38 @@ export function PowerMenu({ isOpen, onClose }: PowerMenuProps) {
   const performAction = () => {
     switch (selectedAction) {
       case 'sleep':
-        // Simulate sleep - darken screen
-        document.body.style.transition = 'filter 1s ease';
-        document.body.style.filter = 'brightness(0)';
-        setTimeout(() => {
-          document.body.style.filter = '';
-          onClose();
-        }, 3000);
+        // Trigger lock screen
+        if (onSleep) {
+          onSleep();
+        }
+        onClose();
         break;
       case 'restart':
         // Simulate restart - reload page
         window.location.reload();
         break;
       case 'shutdown':
-        // Simulate shutdown - show black screen then reload
-        document.body.style.transition = 'filter 1s ease';
+        // Simulate shutdown - try to close tab, fallback to reload
+        document.body.style.transition = 'filter 1s ease, opacity 1s ease';
         document.body.style.filter = 'brightness(0)';
+        document.body.style.opacity = '0';
         setTimeout(() => {
-          window.location.reload();
-        }, 2000);
+          // Try to close the tab (works if opened by script)
+          window.close();
+          // Fallback: show a message if we can't close
+          setTimeout(() => {
+            // If still here, the tab couldn't be closed
+            document.body.innerHTML = `
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: black; color: white; font-family: system-ui;">
+                <h1 style="font-size: 24px; margin-bottom: 16px;">System has been shut down</h1>
+                <p style="color: #888; margin-bottom: 24px;">Refresh the page to restart</p>
+                <button onclick="window.location.reload()" style="padding: 12px 24px; background: #0078d4; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;">
+                  Restart
+                </button>
+              </div>
+            `;
+          }, 500);
+        }, 1500);
         break;
     }
   };
@@ -100,7 +114,7 @@ export function PowerMenu({ isOpen, onClose }: PowerMenuProps) {
                   {selectedAction === 'shutdown' && <Power className="w-8 h-8 text-destructive" />}
                 </div>
                 <h3 className="text-lg font-semibold mb-2">
-                  {selectedAction === 'sleep' && 'Going to sleep...'}
+                  {selectedAction === 'sleep' && 'Locking screen...'}
                   {selectedAction === 'restart' && 'Restarting...'}
                   {selectedAction === 'shutdown' && 'Shutting down...'}
                 </h3>
