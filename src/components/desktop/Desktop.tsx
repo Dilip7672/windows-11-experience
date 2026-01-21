@@ -34,6 +34,13 @@ const defaultDesktopIcons = [
   )},
 ];
 
+// Default grid positions for icons
+const defaultGridPositions: Record<string, { col: number; row: number }> = {
+  'file-explorer': { col: 0, row: 0 },
+  'settings': { col: 0, row: 1 },
+  'github': { col: 0, row: 2 },
+};
+
 export function Desktop() {
   const { windows, openWindow, setIsStartMenuOpen, setIsControlPanelOpen } = useDesktop();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -46,9 +53,9 @@ export function Desktop() {
     { id: '1', title: 'Welcome!', message: 'Welcome to Windows 11 Portfolio. Explore the desktop!', icon: <Info className="w-4 h-4 text-primary" />, time: new Date(), read: false },
   ]);
   const [wallpaper, setWallpaper] = useState(() => localStorage.getItem('desktop-wallpaper') || 'gradient-to-br from-blue-600 via-blue-700 to-indigo-900');
-  const [iconPositions, setIconPositions] = useState<Record<string, { x: number; y: number }>>(() => {
-    const saved = localStorage.getItem('icon-positions');
-    return saved ? JSON.parse(saved) : {};
+  const [iconGridPositions, setIconGridPositions] = useState<Record<string, { col: number; row: number }>>(() => {
+    const saved = localStorage.getItem('icon-grid-positions');
+    return saved ? JSON.parse(saved) : defaultGridPositions;
   });
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; isOpen: boolean; type: 'desktop' | 'file' }>({ x: 0, y: 0, isOpen: false, type: 'desktop' });
 
@@ -57,10 +64,35 @@ export function Desktop() {
     localStorage.setItem('desktop-wallpaper', newWallpaper);
   };
 
-  const handleIconPositionChange = (iconId: string, x: number, y: number) => {
-    const newPositions = { ...iconPositions, [iconId]: { x, y } };
-    setIconPositions(newPositions);
-    localStorage.setItem('icon-positions', JSON.stringify(newPositions));
+  // Create a set of occupied positions (excluding the icon being moved)
+  const getOccupiedPositions = (excludeId?: string): Set<string> => {
+    const occupied = new Set<string>();
+    Object.entries(iconGridPositions).forEach(([id, pos]) => {
+      if (id !== excludeId) {
+        occupied.add(`${pos.col}-${pos.row}`);
+      }
+    });
+    return occupied;
+  };
+
+  const handleIconGridPositionChange = (iconId: string, col: number, row: number) => {
+    const newPositions = { ...iconGridPositions };
+    const targetKey = `${col}-${row}`;
+    
+    // Check if target position is occupied by another icon
+    const occupyingIcon = Object.entries(newPositions).find(
+      ([id, pos]) => id !== iconId && `${pos.col}-${pos.row}` === targetKey
+    );
+    
+    if (occupyingIcon) {
+      // Swap positions - move displaced icon to next available
+      const currentPos = newPositions[iconId];
+      newPositions[occupyingIcon[0]] = currentPos || { col: col, row: row + 1 };
+    }
+    
+    newPositions[iconId] = { col, row };
+    setIconGridPositions(newPositions);
+    localStorage.setItem('icon-grid-positions', JSON.stringify(newPositions));
   };
 
   useEffect(() => {
@@ -145,10 +177,19 @@ export function Desktop() {
         </div>
 
         {/* Desktop Icons */}
-        <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+        <div className="absolute inset-0 z-10 pointer-events-none" style={{ bottom: 48 }}>
           {defaultDesktopIcons.map((icon, index) => (
-            <div key={icon.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
-              <DesktopIcon icon={icon.icon} label={icon.label} customIcon={icon.customIcon} onClick={() => handleIconClick(icon.id)} position={iconPositions[icon.id]} onPositionChange={(x, y) => handleIconPositionChange(icon.id, x, y)} isDraggable={true} />
+            <div key={icon.id} className="animate-fade-in pointer-events-auto" style={{ animationDelay: `${index * 100}ms` }}>
+              <DesktopIcon 
+                icon={icon.icon} 
+                label={icon.label} 
+                customIcon={icon.customIcon} 
+                onClick={() => handleIconClick(icon.id)} 
+                gridPosition={iconGridPositions[icon.id] || defaultGridPositions[icon.id]} 
+                onGridPositionChange={(col, row) => handleIconGridPositionChange(icon.id, col, row)} 
+                occupiedPositions={getOccupiedPositions(icon.id)}
+                isDraggable={true} 
+              />
             </div>
           ))}
         </div>
