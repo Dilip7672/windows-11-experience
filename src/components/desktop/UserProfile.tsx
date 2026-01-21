@@ -47,7 +47,7 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
       {/* Profile Card */}
       <div 
         className={cn(
-          "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[2001] w-[95%] max-w-[450px]",
+          "fixed left-1/2 -translate-x-1/2 z-[2001] w-[90%] max-w-[450px] top-4 sm:top-1/2 sm:-translate-y-1/2 max-h-[90vh] overflow-y-auto",
           isClosing ? "animate-window-close" : "animate-window-open"
         )}
       >

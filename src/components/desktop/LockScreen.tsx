@@ -138,32 +138,32 @@ export function LockScreen({ isLocked, onUnlock }: LockScreenProps) {
         </div>
 
         {/* Time */}
-        <div className="text-center mb-4">
-          <h1 className="text-7xl sm:text-8xl md:text-9xl font-light tracking-tight drop-shadow-lg">
+        <div className="text-center mb-2 sm:mb-4">
+          <h1 className="text-5xl sm:text-7xl md:text-9xl font-light tracking-tight drop-shadow-lg">
             {formatTime(currentTime)}
           </h1>
         </div>
 
         {/* Date */}
-        <p className="text-xl sm:text-2xl font-light text-white/90 drop-shadow mb-8">
+        <p className="text-lg sm:text-xl md:text-2xl font-light text-white/90 drop-shadow mb-6 sm:mb-8">
           {formatDate(currentTime)}
         </p>
 
         {/* User avatar */}
-        <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mb-4 shadow-xl ring-4 ring-white/20">
-          <span className="text-4xl sm:text-5xl">👤</span>
+        <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mb-3 sm:mb-4 shadow-xl ring-4 ring-white/20">
+          <span className="text-3xl sm:text-4xl md:text-5xl">👤</span>
         </div>
-        <p className="text-lg font-medium text-white/90 mb-2">Dilip Poudel</p>
-        <p className="text-sm text-white/60 mb-12">Data Scientist</p>
+        <p className="text-base sm:text-lg font-medium text-white/90 mb-1 sm:mb-2">Dilip Poudel</p>
+        <p className="text-xs sm:text-sm text-white/60 mb-8 sm:mb-12">Data Scientist</p>
 
         {/* Swipe hint */}
         <div 
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce"
+          className="absolute bottom-16 sm:bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce"
           style={{ animationDuration: '2s' }}
         >
-          <ChevronUp className="w-8 h-8 text-white/50" />
-          <ChevronUp className="w-8 h-8 text-white/30 -mt-4" />
-          <p className="text-sm text-white/50 mt-2">Swipe up or click to unlock</p>
+          <ChevronUp className="w-6 h-6 sm:w-8 sm:h-8 text-white/50" />
+          <ChevronUp className="w-6 h-6 sm:w-8 sm:h-8 text-white/30 -mt-3 sm:-mt-4" />
+          <p className="text-xs sm:text-sm text-white/50 mt-2">Swipe up or tap to unlock</p>
         </div>
 
         {/* Progress indicator */}
