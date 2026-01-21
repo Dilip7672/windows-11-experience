@@ -86,9 +86,9 @@ export function PowerMenu({ isOpen, onClose, onSleep }: PowerMenuProps) {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 z-[100] animate-fade-in" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/50 z-[2000] animate-fade-in" onClick={onClose} />
       
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[101] animate-window-open w-[95%] max-w-[350px]">
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[2001] animate-window-open w-[95%] max-w-[350px]">
         <div className="glass rounded-xl shadow-2xl overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-background/80">

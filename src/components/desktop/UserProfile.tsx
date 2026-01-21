@@ -38,7 +38,7 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
       {/* Backdrop */}
       <div 
         className={cn(
-          "fixed inset-0 bg-black/50 z-[1000]",
+          "fixed inset-0 bg-black/50 z-[2000]",
           isClosing ? "animate-backdrop-out" : "animate-backdrop-in"
         )}
         onClick={handleClose}
@@ -47,7 +47,7 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
       {/* Profile Card */}
       <div 
         className={cn(
-          "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1001] w-[95%] max-w-[450px]",
+          "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[2001] w-[95%] max-w-[450px]",
           isClosing ? "animate-window-close" : "animate-window-open"
         )}
       >

@@ -170,7 +170,10 @@ export function Window({ window }: WindowProps) {
     
     const newX = Math.max(0, Math.min(e.clientX - dragOffset.x, globalThis.innerWidth - 100));
     const newY = Math.max(0, Math.min(e.clientY - dragOffset.y, globalThis.innerHeight - 100));
-    updateWindowPosition(window.id, newX, newY);
+    // Prevent window from going under taskbar
+    const taskbarHeight = 48;
+    const maxY = Math.min(newY, globalThis.innerHeight - taskbarHeight - 50);
+    updateWindowPosition(window.id, newX, Math.max(0, maxY));
     
     const snapPos = getSnapPositionFromMouse(e.clientX, e.clientY);
     setShowSnapPreview(snapPos);
