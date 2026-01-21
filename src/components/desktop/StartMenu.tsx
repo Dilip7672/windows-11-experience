@@ -398,7 +398,25 @@ export function StartMenu({ onSleep }: StartMenuProps) {
     handleClose();
   };
 
-  if (!isStartMenuOpen && !isClosing) return null;
+  // Render PowerMenu and UserProfile even when Start Menu is closed
+  const renderDialogs = (
+    <>
+      {/* Power Menu */}
+      <PowerMenu 
+        isOpen={showPowerMenu} 
+        onClose={() => setShowPowerMenu(false)}
+        onSleep={onSleep}
+      />
+
+      {/* User Profile */}
+      <UserProfile
+        isOpen={showUserProfile}
+        onClose={() => setShowUserProfile(false)}
+      />
+    </>
+  );
+
+  if (!isStartMenuOpen && !isClosing) return renderDialogs;
 
   return (
     <>
@@ -553,7 +571,10 @@ export function StartMenu({ onSleep }: StartMenuProps) {
         {/* Footer */}
         <div className="flex items-center justify-between p-4 mt-2 border-t border-border/50">
           <button 
-            onClick={() => setShowUserProfile(true)}
+            onClick={() => {
+              handleClose();
+              setTimeout(() => setShowUserProfile(true), 250);
+            }}
             className="flex items-center gap-2 px-3 py-2 rounded-lg hover-effect transition-bounce"
           >
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
@@ -562,7 +583,10 @@ export function StartMenu({ onSleep }: StartMenuProps) {
             <span className="text-sm font-medium">Dilip Poudel</span>
           </button>
           <button 
-            onClick={() => setShowPowerMenu(true)}
+            onClick={() => {
+              handleClose();
+              setTimeout(() => setShowPowerMenu(true), 250);
+            }}
             className="p-2 rounded-lg hover-effect hover:text-destructive transition-all duration-200"
           >
             <Power className="w-5 h-5" />
@@ -570,18 +594,7 @@ export function StartMenu({ onSleep }: StartMenuProps) {
         </div>
       </div>
 
-      {/* Power Menu */}
-      <PowerMenu 
-        isOpen={showPowerMenu} 
-        onClose={() => setShowPowerMenu(false)}
-        onSleep={onSleep}
-      />
-
-      {/* User Profile */}
-      <UserProfile
-        isOpen={showUserProfile}
-        onClose={() => setShowUserProfile(false)}
-      />
+      {renderDialogs}
     </>
   );
 }
