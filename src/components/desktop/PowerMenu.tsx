@@ -88,76 +88,76 @@ export function PowerMenu({ isOpen, onClose, onSleep }: PowerMenuProps) {
     <>
       <div className="fixed inset-0 bg-black/50 z-[2000] animate-fade-in" onClick={onClose} />
       
-      <div className="fixed left-1/2 -translate-x-1/2 z-[2001] animate-window-open w-[90%] max-w-[350px] top-4 sm:top-1/2 sm:-translate-y-1/2">
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[2001] animate-window-open w-[85%] max-w-[300px]">
         <div className="glass rounded-xl shadow-2xl overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-background/80">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-border/50 bg-background/80">
             <div className="flex items-center gap-2">
-              <Power className="w-4 h-4 text-primary" />
-              <span className="font-medium text-sm">Power Options</span>
+              <Power className="w-3.5 h-3.5 text-primary" />
+              <span className="font-medium text-xs">Power Options</span>
             </div>
             <button 
               onClick={onClose}
-              className="p-1.5 rounded-lg hover:bg-secondary/50 transition-colors"
+              className="p-1 rounded-lg hover:bg-secondary/50 transition-colors"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
 
           {/* Content */}
-          <div className="p-4">
+          <div className="p-3">
             {isPerforming ? (
-              <div className="text-center py-8 animate-fade-in">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                  {selectedAction === 'sleep' && <Moon className="w-8 h-8 text-primary" />}
-                  {selectedAction === 'restart' && <RotateCcw className="w-8 h-8 text-primary animate-spin" />}
-                  {selectedAction === 'shutdown' && <Power className="w-8 h-8 text-destructive" />}
+              <div className="text-center py-6 animate-fade-in">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center">
+                  {selectedAction === 'sleep' && <Moon className="w-6 h-6 text-primary" />}
+                  {selectedAction === 'restart' && <RotateCcw className="w-6 h-6 text-primary animate-spin" />}
+                  {selectedAction === 'shutdown' && <Power className="w-6 h-6 text-destructive" />}
                 </div>
-                <h3 className="text-lg font-semibold mb-2">
+                <h3 className="text-sm font-semibold mb-1">
                   {selectedAction === 'sleep' && 'Locking screen...'}
                   {selectedAction === 'restart' && 'Restarting...'}
                   {selectedAction === 'shutdown' && 'Shutting down...'}
                 </h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  {countdown > 0 ? `Starting in ${countdown} seconds` : 'Please wait...'}
+                <p className="text-muted-foreground text-xs mb-3">
+                  {countdown > 0 ? `Starting in ${countdown}s` : 'Please wait...'}
                 </p>
                 <button
                   onClick={cancelAction}
-                  className="px-4 py-2 rounded-lg text-sm bg-secondary hover:bg-secondary/80 transition-colors"
+                  className="px-3 py-1.5 rounded-lg text-xs bg-secondary hover:bg-secondary/80 transition-colors"
                 >
                   Cancel
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => handleAction('sleep')}
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-secondary/50 transition-all group"
+                  className="flex flex-col items-center gap-1.5 p-3 rounded-xl hover:bg-secondary/50 transition-all group"
                 >
-                  <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Moon className="w-6 h-6 text-blue-500" />
+                  <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Moon className="w-5 h-5 text-blue-500" />
                   </div>
-                  <span className="text-sm font-medium">Sleep</span>
+                  <span className="text-xs font-medium">Sleep</span>
                 </button>
 
                 <button
                   onClick={() => handleAction('restart')}
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-secondary/50 transition-all group"
+                  className="flex flex-col items-center gap-1.5 p-3 rounded-xl hover:bg-secondary/50 transition-all group"
                 >
-                  <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <RotateCcw className="w-6 h-6 text-amber-500" />
+                  <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <RotateCcw className="w-5 h-5 text-amber-500" />
                   </div>
-                  <span className="text-sm font-medium">Restart</span>
+                  <span className="text-xs font-medium">Restart</span>
                 </button>
 
                 <button
                   onClick={() => handleAction('shutdown')}
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-secondary/50 transition-all group"
+                  className="flex flex-col items-center gap-1.5 p-3 rounded-xl hover:bg-secondary/50 transition-all group"
                 >
-                  <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Power className="w-6 h-6 text-destructive" />
+                  <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Power className="w-5 h-5 text-destructive" />
                   </div>
-                  <span className="text-sm font-medium">Shut down</span>
+                  <span className="text-xs font-medium">Shut down</span>
                 </button>
               </div>
             )}

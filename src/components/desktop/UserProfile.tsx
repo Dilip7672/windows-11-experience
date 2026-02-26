@@ -47,34 +47,34 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
       {/* Profile Card */}
       <div 
         className={cn(
-          "fixed left-1/2 -translate-x-1/2 z-[2001] w-[90%] max-w-[450px] top-4 sm:top-1/2 sm:-translate-y-1/2 max-h-[90vh] overflow-y-auto",
+          "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[2001] w-[88%] max-w-[380px] max-h-[85vh] overflow-y-auto",
           isClosing ? "animate-window-close" : "animate-window-open"
         )}
       >
         <div className="glass rounded-2xl shadow-2xl overflow-hidden">
           {/* Header with gradient */}
-          <div className="relative h-24 bg-gradient-to-r from-primary via-primary/80 to-accent">
+          <div className="relative h-20 bg-gradient-to-r from-primary via-primary/80 to-accent">
             <button 
               onClick={handleClose}
-              className="absolute top-3 right-3 p-1.5 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors"
+              className="absolute top-2 right-2 p-1 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
             
             {/* Avatar */}
-            <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center ring-4 ring-background shadow-xl">
-                <span className="text-3xl">👨‍💻</span>
+            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center ring-3 ring-background shadow-xl">
+                <span className="text-2xl">👨‍💻</span>
               </div>
             </div>
           </div>
 
           {/* Content */}
-          <div className="pt-14 pb-6 px-6">
+          <div className="pt-10 pb-4 px-4">
             {/* Name & Title */}
-            <div className="text-center mb-4">
-              <h2 className="text-xl font-bold">{userInfo.name}</h2>
-              <p className="text-sm text-muted-foreground">{userInfo.title}</p>
+            <div className="text-center mb-3">
+              <h2 className="text-base font-bold">{userInfo.name}</h2>
+              <p className="text-xs text-muted-foreground">{userInfo.title}</p>
               <div className="flex items-center justify-center gap-1 mt-1 text-xs text-muted-foreground">
                 <MapPin className="w-3 h-3" />
                 <span>{userInfo.location}</span>
@@ -82,19 +82,19 @@ export function UserProfile({ isOpen, onClose }: UserProfileProps) {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <div className="bg-secondary/50 rounded-lg p-3 text-center">
-                <Briefcase className="w-4 h-4 mx-auto mb-1 text-primary" />
-                <p className="text-xs font-medium">{userInfo.experience}</p>
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              <div className="bg-secondary/50 rounded-lg p-2 text-center">
+                <Briefcase className="w-3.5 h-3.5 mx-auto mb-0.5 text-primary" />
+                <p className="text-[10px] font-medium">{userInfo.experience}</p>
               </div>
-              <div className="bg-secondary/50 rounded-lg p-3 text-center">
-                <GraduationCap className="w-4 h-4 mx-auto mb-1 text-primary" />
-                <p className="text-xs font-medium">{userInfo.education}</p>
+              <div className="bg-secondary/50 rounded-lg p-2 text-center">
+                <GraduationCap className="w-3.5 h-3.5 mx-auto mb-0.5 text-primary" />
+                <p className="text-[10px] font-medium">{userInfo.education}</p>
               </div>
             </div>
 
             {/* Bio */}
-            <p className="text-sm text-muted-foreground leading-relaxed mb-4 text-center">
+            <p className="text-xs text-muted-foreground leading-relaxed mb-3 text-center">
               {userInfo.bio}
             </p>
 
