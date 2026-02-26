@@ -122,7 +122,15 @@ export function WeatherWidget() {
 
   // Check location permission on mount
   useEffect(() => {
+    const isMobile = window.innerWidth < 768;
+
     const checkPermission = async () => {
+      if (isMobile) {
+        // On mobile, skip custom dialog and request directly
+        requestLocation();
+        return;
+      }
+
       if ('permissions' in navigator) {
         try {
           const result = await navigator.permissions.query({ name: 'geolocation' });
@@ -133,7 +141,7 @@ export function WeatherWidget() {
             setPermissionStatus('denied');
             fetchWeather(28.1, 82.3);
           } else {
-            // Show custom permission dialog
+            // Show custom permission dialog on desktop
             setShowPermissionDialog(true);
           }
         } catch {
