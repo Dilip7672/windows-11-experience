@@ -15,8 +15,8 @@ export function LocationPermissionDialog({ isOpen, onAllow, onDeny }: LocationPe
       {/* Backdrop */}
       <div className="fixed inset-0 bg-black/50 z-[2000] animate-fade-in" />
       
-      {/* Dialog - Top center on mobile, center on desktop */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[2001] animate-window-open w-[88%] max-w-[340px]">
+      {/* Dialog - Top notification popup on mobile, center on desktop */}
+      <div className="fixed top-3 left-1/2 -translate-x-1/2 sm:top-1/2 sm:-translate-y-1/2 z-[2001] animate-window-open w-[92%] max-w-[340px]">
         <div className="glass rounded-xl shadow-2xl overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 border-b border-border/50 bg-background/80">

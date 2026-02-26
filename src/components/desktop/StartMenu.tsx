@@ -568,8 +568,8 @@ export function StartMenu({ onSleep }: StartMenuProps) {
           </>
         )}
 
-        {/* Footer */}
-        <div className="flex items-center justify-between p-4 mt-2 border-t border-border/50">
+        {/* Footer - hidden on mobile */}
+        <div className="hidden sm:flex items-center justify-between p-4 mt-2 border-t border-border/50">
           <button 
             onClick={() => {
               handleClose();
